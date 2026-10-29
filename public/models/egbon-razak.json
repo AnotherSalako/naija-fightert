@@ -49,6 +49,76 @@
       "contact": 0.233,
       "low": 0.167
     },
+    "hk-backhand": {
+      "duration": 0.45,
+      "contact": 0.15,
+      "low": 0.133
+    },
+    "hk-barge-short": {
+      "duration": 0.683,
+      "contact": 0.45,
+      "low": 0.1
+    },
+    "hk-barge": {
+      "duration": 0.683,
+      "contact": 0.1,
+      "low": 0.133
+    },
+    "hk-cross": {
+      "duration": 0.317,
+      "contact": 0.133,
+      "low": 0.1
+    },
+    "hk-haymaker": {
+      "duration": 0.55,
+      "contact": 0.15,
+      "low": 0.217
+    },
+    "hk-hop-kick": {
+      "duration": 0.55,
+      "contact": 0.067,
+      "low": 0.067
+    },
+    "hk-jab": {
+      "duration": 0.167,
+      "contact": 0.05,
+      "low": 0.05
+    },
+    "hk-low-jab": {
+      "duration": 0.183,
+      "contact": 0.083,
+      "low": 0.0
+    },
+    "hk-low-kick": {
+      "duration": 0.367,
+      "contact": 0.15,
+      "low": 0.117
+    },
+    "hk-rear-sweep": {
+      "duration": 0.683,
+      "contact": 0.267,
+      "low": 0.2
+    },
+    "hk-slap": {
+      "duration": 0.383,
+      "contact": 0.1,
+      "low": 0.1
+    },
+    "hk-step-elbow": {
+      "duration": 0.5,
+      "contact": 0.183,
+      "low": 0.267
+    },
+    "hk-teep": {
+      "duration": 0.4,
+      "contact": 0.167,
+      "low": 0.067
+    },
+    "hk-uppercut": {
+      "duration": 0.55,
+      "contact": 0.183,
+      "low": 0.083
+    },
     "hook": {
       "duration": 2.167,
       "contact": 1.0,
@@ -94,16 +164,6 @@
       "contact": 0.833,
       "low": 1.033
     },
-    "throw": {
-      "duration": 6.667,
-      "contact": 4.733,
-      "low": 2.133
-    },
-    "thrown": {
-      "duration": 6.667,
-      "contact": 2.033,
-      "low": 5.633
-    },
     "uppercut": {
       "duration": 1.333,
       "contact": 0.5,
@@ -127,5 +187,5 @@
   },
   "facing": "+Z",
   "source": "tools/blender/prepare_character.py from egbon-rigged-tpose.fbx",
-  "bytes": 2444180
+  "bytes": 2474136
 }

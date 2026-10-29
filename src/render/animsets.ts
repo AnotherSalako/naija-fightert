@@ -23,6 +23,8 @@ export interface ClipEntry {
   lean?: number;
   /** keep the hips over the fighter's spot: the clip's own sideways drift (mocap that walks off its origin) is dropped */
   center?: boolean;
+  /** a hand-keyed attack authored frame for frame to the move's data: play it in real time from frame 1 */
+  native?: boolean;
   /** raise the arms this many degrees (a hook made into an uppercut) */
   aim?: number;
   /** cut straight in, without blending from the previous pose (a body landing flat) */

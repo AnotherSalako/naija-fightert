@@ -39,6 +39,7 @@ from rig_generated import own_textures, paint_regions  # noqa: E402
 
 # clips whose hips must not move at all: the sim already lifts the fighter through a jump
 STILL_HIPS = {'jump'}
+OUT_FPS = 60
 
 
 def parse():
@@ -197,10 +198,50 @@ def in_place(arm, act, name: str) -> None:
     rest = (arm.matrix_world.to_3x3() @ arm.data.bones['Hips'].matrix_local.to_3x3()).normalized()
     vertical = max(range(3), key=lambda i: abs(rest.col[i].z))
     for fc in fcurves(act):
+        # hand-keyed clips (hk-*) are authored around the fighter's spot and keep their hips travel (a step-in)
+        if name.startswith('hk-'):
+            return
         if fc.data_path == 'pose.bones["Hips"].location' and (fc.array_index != vertical or name in STILL_HIPS):
             first = fc.keyframe_points[0].co[1] if fc.keyframe_points else 0.0
             for k in fc.keyframe_points:
                 k.co[1] = k.handle_left[1] = k.handle_right[1] = first
+
+
+def bake_onto(arm, src, act, name: str):
+    """A new action on `arm` that reproduces `src` playing `act`, frame by frame, in armature space."""
+    sc = bpy.context.scene
+    srcb = {b.name.split(':')[-1]: b for b in src.pose.bones}
+    new = bpy.data.actions.new(name + '__baked')
+    arm.animation_data_create()
+    keep = arm.animation_data.action
+    arm.animation_data.action = new
+    for pb in arm.pose.bones:
+        pb.rotation_mode = 'QUATERNION'
+
+    def depth(b):
+        d = 0
+        while b.parent:
+            b, d = b.parent, d + 1
+        return d
+    levels: dict = {}
+    for pb in arm.pose.bones:
+        levels.setdefault(depth(pb.bone), []).append(pb)
+    to_arm = arm.matrix_world.inverted() @ src.matrix_world
+    start, end = (int(round(x)) for x in act.frame_range)
+    for fr in range(start, end + 1):
+        sc.frame_set(fr)
+        for lvl in sorted(levels):
+            for pb in levels[lvl]:
+                s = srcb.get(pb.name.split(':')[-1])
+                if s:
+                    pb.matrix = to_arm @ s.matrix
+            bpy.context.view_layer.update()
+        for pb in arm.pose.bones:
+            pb.keyframe_insert('rotation_quaternion', frame=fr - start + 1)
+        arm.pose.bones['Hips'].keyframe_insert('location', frame=fr - start + 1)
+    arm.animation_data.action = keep
+    new.use_fake_user = True
+    return new
 
 
 def contact(src, act, fps: float) -> tuple[float, float]:
@@ -251,17 +292,23 @@ def main() -> None:
     # clips from separate files: same skeleton, so the actions can be shared
     clips = []
     info = {}
+    src_fps: dict = {}
     folder = path(a.anims) if a.anims else None
     if folder and folder.exists():
         for f in sorted(list(folder.glob('*.fbx')) + list(folder.glob('*.glb'))):
             new = import_file(f)
             src = next((o for o in new if o.type == 'ARMATURE'), None)
             act = src.animation_data.action if src and src.animation_data else None
+            if act and f.stem.startswith('anim-hk-'):
+                # hand-keyed clips come from another export of the rig whose bone rests differ: copy the
+                # pose bone by bone (armature space) onto this skeleton instead of sharing the keys
+                act = bake_onto(arm, src, act, f.stem.removeprefix('anim-'))
             if act:
                 act.name = f.stem.removeprefix('anim-')
                 act.use_fake_user = True
                 clips.append(act)
                 fps = bpy.context.scene.render.fps / bpy.context.scene.render.fps_base
+                src_fps[act.name] = fps
                 hit, low = contact(src, act, fps)
                 info[act.name] = {'duration': round((act.frame_range[1] - act.frame_range[0]) / fps, 3),
                                   'contact': hit, 'low': low}
@@ -272,6 +319,17 @@ def main() -> None:
             # Mixamo names the channels "mixamorig:Hips" etc.; keep them matching the renamed bones
             fc.data_path = fc.data_path.replace('mixamorig:', '')
         in_place(arm, act, act.name)
+        # every clip on one 60 fps timeline (Mixamo files are 30 fps, hand-keyed ones 60), so the export
+        # samples each at its own speed and a hand-keyed hit frame stays a whole frame
+        k = OUT_FPS / src_fps.get(act.name, OUT_FPS)
+        if abs(k - 1) > 1e-6:
+            start = act.frame_range[0]
+            for fc in fcurves(act):
+                for kp in fc.keyframe_points:
+                    for attr in ('co', 'handle_left', 'handle_right'):
+                        v = getattr(kp, attr)
+                        v[0] = start + (v[0] - start) * k
+    bpy.context.scene.render.fps, bpy.context.scene.render.fps_base = OUT_FPS, 1.0
 
     # size, floor, facing
     data = json.loads((ROOT / 'src' / 'sim' / 'data' / f'{a.id}.json').read_text(encoding='utf-8'))
@@ -360,7 +418,7 @@ def main() -> None:
     # WebP textures and Draco geometry keep a full-detail fighter (50k triangles, 2K maps) under 3 MB;
     # the game's GLTFLoader decodes Draco with the decoder in public/draco/
     bpy.ops.export_scene.gltf(filepath=str(glb), export_format='GLB', use_selection=True, export_skins=True,
-                              export_animation_mode='NLA_TRACKS', export_yup=True, export_image_format='WEBP',
+                              export_animation_mode='NLA_TRACKS', export_force_sampling=False, export_yup=True, export_image_format='WEBP',
                               export_image_quality=85, export_vertex_color='ACTIVE', export_all_vertex_colors=False,
                               export_draco_mesh_compression_enable=True, export_draco_mesh_compression_level=6,
                               export_draco_position_quantization=14, export_draco_normal_quantization=10,

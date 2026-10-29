@@ -62,6 +62,7 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     // the clip's lead-in and follow-through are squeezed into the move's startup and the rest of its
     // frames; capped, so a 3-frame jab no longer plays its whole mocap wind-up at 7x (a blur, then a
     // crawl) but starts closer to the hit and runs at most MAX_WIND / MAX_FOLLOW times real speed
+    if (e.native) return { name: e.clip, time: Math.min(c.duration, (f.frame - 1) / FPS), lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE };
     const startupSec = Math.max(1, m.startup) / FPS;
     const followSec = Math.max(1, m.active + m.recovery + m.animHoldFrames) / FPS;
     const start = Math.max(0, c.contact - Math.min(WINDUP, startupSec * MAX_WIND));

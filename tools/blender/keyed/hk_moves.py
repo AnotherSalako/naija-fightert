@@ -1,0 +1,153 @@
+
+import hk_lib as H
+CR=dict(dip=0.24, lean=-12, L=(0.02,0.12,-0.14), R=(0.03,0.05,-0.14))
+def crouch(c,f,**kw):
+    d=dict(CR); d.update(kw); H.key(c,f,**d)
+MOVES={}
+def move(name, end, check):
+    def deco(fn): MOVES[name]=(fn,end,check); return fn
+    return deco
+
+@move('hk-haymaker', 34, (10,'RightHand'))
+def haymaker(c):
+    H.key(c,1)
+    H.key(c,5,  hips=-12, spine=-6, lean=3, dip=0.03, fwd=-0.02, head=-8, R=(-0.10,0.10,-0.02), L=(0.02,0.10,0.06))
+    H.key(c,8,  hips=10, spine=8, lean=-3, dip=0.05, fwd=0.06, head=10, R=(-0.30,-0.04,0.08), L=(0.03,0.22,0.10), LF=(0,-0.06,0.03))
+    H.key(c,9,  hips=17, spine=10, lean=-6, dip=0.05, fwd=0.10, head=18, R=(-0.30,-0.46,0.06), L=(0.02,0.25,0.12), LF=(0,-0.09,0.01))
+    H.key(c,10, hips=22, spine=12, lean=-8, dip=0.05, fwd=0.12, head=24, R=(0.06,-0.60,0.02), L=(0.02,0.26,0.13), LF=(0,-0.10,0))
+    H.key(c,11, hips=24, spine=13, lean=-9, dip=0.055, fwd=0.125, head=25, R=(0.14,-0.56,0.0), L=(0.02,0.26,0.12), LF=(0,-0.10,0))
+    H.key(c,13, hips=25, spine=14, lean=-10, dip=0.06, fwd=0.13, head=26, R=(0.12,-0.52,-0.02), L=(0.02,0.26,0.12), LF=(0,-0.10,0))
+    H.key(c,20, hips=10, spine=5, lean=-4, dip=0.04, fwd=0.07, head=10, R=(0.05,-0.22,0.0), L=(0.02,0.14,0.06), LF=(0,-0.06,0))
+    H.key(c,34)
+
+@move('hk-jab', 11, (3,'LeftHand'))
+def jab(c):
+    H.key(c,1)
+    H.key(c,2, hips=-2, spine=-2, dip=0.01, L=(0.0,0.03,0.02), R=(0.02,0.02,0.02))
+    H.key(c,3, hips=-5, spine=-9, lean=-3, dip=0.02, fwd=0.04, head=-4, L=(-0.05,-0.30,0.17), R=(0.03,0.03,0.03), LF=(0,-0.03,0))
+    H.key(c,4, hips=-6, spine=-10, lean=-3, dip=0.02, fwd=0.045, head=-4, L=(-0.05,-0.32,0.16), R=(0.03,0.03,0.03), LF=(0,-0.03,0))
+    H.key(c,7, hips=-2, spine=-4, dip=0.01, fwd=0.02, L=(0.0,-0.08,0.06), R=(0.02,0.02,0.02), LF=(0,-0.015,0))
+    H.key(c,11)
+
+@move('hk-cross', 20, (6,'RightHand'))
+def cross(c):
+    H.key(c,1)
+    H.key(c,3, hips=-6, spine=-4, lean=2, dip=0.02, R=(-0.03,0.05,0.0), L=(0.0,0.03,0.03))
+    H.key(c,6, hips=18, spine=11, lean=-6, dip=0.04, fwd=0.07, head=18, R=(0.15,-0.58,0.0), L=(-0.02,0.30,0.13), LF=(0,-0.05,0))
+    H.key(c,8, hips=20, spine=12, lean=-7, dip=0.04, fwd=0.075, head=19, R=(0.17,-0.60,-0.01), L=(-0.02,0.30,0.13), LF=(0,-0.05,0))
+    H.key(c,13, hips=8, spine=4, lean=-2, dip=0.02, fwd=0.03, head=8, R=(0.06,-0.18,0.0), L=(0,0.12,0.06), LF=(0,-0.02,0))
+    H.key(c,20)
+
+@move('hk-low-jab', 12, (4,'LeftHand'))
+def low_jab(c):
+    crouch(c,1)
+    crouch(c,3, hips=-2, spine=-3, L=(0.02,0.14,-0.12))
+    crouch(c,4, hips=-6, spine=-10, fwd=0.04, head=-4, L=(-0.04,-0.28,-0.12), LF=(0,-0.03,0))
+    crouch(c,5, hips=-6, spine=-11, fwd=0.045, head=-4, L=(-0.04,-0.30,-0.13), LF=(0,-0.03,0))
+    crouch(c,8, hips=-2, spine=-4, fwd=0.02, L=(0.0,0.0,-0.13), LF=(0,-0.015,0))
+    crouch(c,12)
+
+@move('hk-low-kick', 23, (7,'LeftFoot'))
+def low_kick(c):
+    crouch(c,1)
+    crouch(c,4, hips=-8, lean=-6, dip=0.27, LF=(0.02,0.04,0.06))
+    crouch(c,7, hips=-14, spine=-4, lean=4, dip=0.30, head=-6, LF=(0.04,-0.50,0.02), L=(0.04,0.18,-0.10))
+    crouch(c,9, hips=-15, spine=-4, lean=5, dip=0.30, head=-6, LF=(0.04,-0.53,0.02), L=(0.04,0.18,-0.10))
+    crouch(c,15, hips=-6, lean=-6, dip=0.27, LF=(0.02,-0.15,0.05))
+    crouch(c,23)
+
+@move('hk-uppercut', 34, (8,'RightHand'))
+def uppercut(c):
+    crouch(c,1)
+    crouch(c,5, hips=-10, spine=-5, dip=0.30, lean=-14, R=(0.02,-0.02,-0.30))
+    H.key(c,8, hips=20, spine=12, lean=4, dip=0.0, fwd=0.05, head=14, R=(0.14,-0.42,0.18), L=(0.0,0.24,0.10), LF=(0,-0.04,0))
+    H.key(c,11, hips=24, spine=14, lean=7, dip=-0.02, fwd=0.05, head=16, R=(0.16,-0.36,0.34), L=(0.0,0.24,0.10), LF=(0,-0.04,0))
+    H.key(c,20, hips=8, spine=4, lean=2, dip=0.02, fwd=0.02, head=6, R=(0.06,-0.12,0.10), L=(0,0.10,0.05), LF=(0,-0.02,0))
+    H.key(c,34)
+
+@move('hk-step-elbow', 31, (14,'RightHand'))
+def step_elbow(c):   # 6M overhead: step in, rear arm rises and hammers down, hit frame 14
+    H.key(c,1)
+    H.key(c,5,  hips=-6, spine=-4, lean=4, dip=0.02, R=(0.0,0.05,0.12), L=(0.0,0.05,0.03))
+    H.key(c,10, hips=10, spine=8, lean=2, dip=-0.01, fwd=0.08, head=8, R=(0.12,-0.20,0.40), L=(0.0,0.18,0.08), LF=(0,-0.12,0.06))
+    H.key(c,14, hips=20, spine=12, lean=-16, dip=0.06, fwd=0.16, head=18, R=(0.16,-0.52,-0.10), L=(0.0,0.24,0.06), LF=(0,-0.18,0))
+    H.key(c,16, hips=21, spine=13, lean=-18, dip=0.07, fwd=0.17, head=18, R=(0.16,-0.52,-0.20), L=(0.0,0.24,0.06), LF=(0,-0.18,0))
+    H.key(c,24, hips=8, spine=5, lean=-6, dip=0.03, fwd=0.08, head=8, R=(0.06,-0.20,-0.04), L=(0,0.10,0.04), LF=(0,-0.09,0))
+    H.key(c,31)
+
+@move('hk-teep', 25, (8,'LeftFoot'))
+def teep(c):   # 4M front push kick, hit frame 8
+    H.key(c,1)
+    H.key(c,4,  hips=-4, lean=6, dip=0.02, fwd=-0.02, LF=(0.0,-0.10,0.36), L=(0.0,0.06,0.04), R=(0.0,0.03,0.02))
+    H.key(c,8,  hips=-6, lean=14, dip=0.0, fwd=-0.03, head=-4, LF=(0.0,-0.62,0.66), L=(0.02,0.10,0.04), R=(0.02,0.04,0.03))
+    H.key(c,10, hips=-6, lean=15, dip=0.0, fwd=-0.03, head=-4, LF=(0.0,-0.66,0.64), L=(0.02,0.10,0.04), R=(0.02,0.04,0.03))
+    H.key(c,15, hips=-3, lean=8, dip=0.02, LF=(0.0,-0.18,0.34), L=(0.0,0.06,0.03))
+    H.key(c,25)
+
+@move('hk-barge', 42, (18,'LeftArm'))
+def barge(c):   # 6H Bus Barge: load, then drive the lead shoulder in, hit frame 18
+    H.key(c,1)
+    H.key(c,8,  hips=-14, spine=-6, lean=-10, dip=0.10, fwd=-0.04, head=-6, L=(0.06,0.10,-0.06), R=(0.04,0.0,-0.06), LF=(0,0.02,0))
+    H.key(c,14, hips=-22, spine=-10, lean=-16, dip=0.10, fwd=0.10, head=-10, L=(0.08,0.06,-0.14), R=(0.06,-0.04,-0.10), LF=(0,-0.14,0.06))
+    H.key(c,18, hips=-30, spine=-12, lean=-20, dip=0.09, fwd=0.20, head=-14, L=(0.08,0.02,-0.18), R=(0.06,-0.08,-0.12), LF=(0,-0.24,0), RF=(0,-0.08,0))
+    H.key(c,21, hips=-31, spine=-13, lean=-21, dip=0.09, fwd=0.22, head=-14, L=(0.08,0.02,-0.18), R=(0.06,-0.08,-0.12), LF=(0,-0.24,0), RF=(0,-0.10,0))
+    H.key(c,30, hips=-10, spine=-4, lean=-8, dip=0.05, fwd=0.10, head=-5, L=(0.04,0.04,-0.06), R=(0.03,-0.02,-0.04), LF=(0,-0.12,0), RF=(0,-0.05,0))
+    H.key(c,42)
+
+@move('hk-hop-kick', 34, (12,'LeftFoot'))
+def hop_kick(c):   # 66H Conductor Hop: small hop, front leg chops down (overhead), hit frame 12
+    H.key(c,1)
+    H.key(c,4,  dip=0.08, lean=-4, L=(0,0.04,-0.02))
+    H.key(c,8,  hips=-6, lean=10, dip=-0.18, fwd=0.06, LF=(0.0,-0.36,0.95), RF=(0,0.0,0.30), L=(0.02,0.10,0.08), R=(0.02,0.04,0.06))
+    H.key(c,12, hips=-8, lean=-6, dip=-0.10, fwd=0.12, head=-4, LF=(0.0,-0.56,0.62), RF=(0,-0.02,0.22), L=(0.02,0.10,0.04))
+    H.key(c,15, hips=-8, lean=-8, dip=0.04, fwd=0.14, LF=(0.0,-0.40,0.02), RF=(0,-0.04,0.0), L=(0.02,0.08,0.02))
+    H.key(c,22, hips=-3, lean=-3, dip=0.04, fwd=0.08, LF=(0,-0.20,0), RF=(0,-0.04,0))
+    H.key(c,34)
+
+@move('hk-slap', 24, (7,'RightHand'))
+def slap(c):   # 214A Ticket Slap: rear open-hand slap, flatter and quicker than the haymaker, hit frame 7
+    H.key(c,1)
+    H.key(c,4,  hips=-10, spine=-6, lean=2, dip=0.02, head=-6, R=(-0.22,0.10,0.04), L=(0.02,0.08,0.05))
+    H.key(c,6,  hips=8, spine=6, lean=-3, dip=0.03, fwd=0.05, head=8, R=(-0.26,-0.36,0.02), L=(0.02,0.20,0.10), LF=(0,-0.05,0))
+    H.key(c,7,  hips=18, spine=11, lean=-5, dip=0.03, fwd=0.07, head=18, R=(0.08,-0.58,0.0), L=(0.02,0.24,0.12), LF=(0,-0.06,0))
+    H.key(c,9,  hips=22, spine=13, lean=-6, dip=0.03, fwd=0.075, head=20, R=(0.28,-0.46,-0.04), L=(0.02,0.24,0.12), LF=(0,-0.06,0))
+    H.key(c,16, hips=8, spine=4, lean=-2, dip=0.02, fwd=0.03, head=8, R=(0.06,-0.14,0.0), L=(0.0,0.10,0.05), LF=(0,-0.03,0))
+    H.key(c,24)
+
+@move('hk-backhand', 28, (9,'LeftHand'))
+def backhand(c):   # 214A-2 Change Collect: lead backhand swinging outward, hit frame 9
+    H.key(c,1)
+    H.key(c,5,  hips=12, spine=8, lean=-2, dip=0.02, head=8, L=(-0.24,0.02,0.10), R=(0.02,0.02,0.02))
+    H.key(c,8,  hips=-4, spine=-6, lean=-4, dip=0.03, fwd=0.05, head=-4, L=(-0.14,-0.24,0.16), LF=(0,-0.05,0))
+    H.key(c,9,  hips=-10, spine=-10, lean=-5, dip=0.03, fwd=0.06, head=-8, L=(0.0,-0.30,0.16), LF=(0,-0.06,0))
+    H.key(c,11, hips=-14, spine=-12, lean=-5, dip=0.03, fwd=0.065, head=-10, L=(0.20,-0.20,0.12), LF=(0,-0.06,0))
+    H.key(c,19, hips=-4, spine=-4, lean=-2, dip=0.02, fwd=0.03, L=(0.06,-0.04,0.04), LF=(0,-0.03,0))
+    H.key(c,28)
+
+@move('hk-rear-sweep', 42, (12,'RightFoot'))
+def rear_sweep(c):   # 214H-3 Off-load (Sweep): drop low and spin the rear leg along the floor, hit frame 12
+    H.key(c,1)
+    crouch(c,6, hips=10, spine=4, dip=0.30, lean=-16, RF=(-0.06,0.08,0.02))
+    crouch(c,10, hips=40, spine=14, dip=0.36, lean=-18, head=20, RF=(-0.30,-0.40,0.03), L=(0.10,0.0,-0.30), R=(0.06,-0.06,-0.26))
+    crouch(c,12, hips=58, spine=18, dip=0.38, lean=-18, head=30, RF=(-0.08,-0.92,0.03), L=(0.10,0.0,-0.30), R=(0.06,-0.06,-0.26))
+    crouch(c,16, hips=66, spine=20, dip=0.38, lean=-18, head=34, RF=(0.18,-0.82,0.03), L=(0.10,0.0,-0.30), R=(0.06,-0.06,-0.26))
+    crouch(c,28, hips=20, spine=6, dip=0.26, lean=-12, head=10, RF=(0.04,-0.20,0.0))
+    H.key(c,42)
+
+@move('hk-barge-short', 42, (12,'LeftArm'))
+def barge_short(c):   # 214A-3 Off-load (Barge): the rekka ender, a quicker shoulder, hit frame 12
+    H.key(c,1)
+    H.key(c,6,  hips=-14, spine=-6, lean=-10, dip=0.08, fwd=-0.02, head=-6, L=(0.06,0.08,-0.06), R=(0.04,0.0,-0.06))
+    H.key(c,12, hips=-30, spine=-12, lean=-18, dip=0.08, fwd=0.18, head=-14, L=(0.08,0.02,-0.18), R=(0.06,-0.08,-0.12), LF=(0,-0.22,0), RF=(0,-0.06,0))
+    H.key(c,16, hips=-31, spine=-13, lean=-19, dip=0.08, fwd=0.20, head=-14, L=(0.08,0.02,-0.18), R=(0.06,-0.08,-0.12), LF=(0,-0.22,0), RF=(0,-0.08,0))
+    H.key(c,28, hips=-10, spine=-4, lean=-6, dip=0.04, fwd=0.08, head=-5, LF=(0,-0.10,0), RF=(0,-0.04,0))
+    H.key(c,42)
+
+def run(names=None, export=True):
+    out=[]
+    for n,(fn,end,(cf,limb)) in MOVES.items():
+        if names and n not in names: continue
+        c=H.begin(n); fn(c)
+        out.append((n, cf, limb, H.reach(c,cf,limb), H.reach(c,cf,'Hips')))
+        if export: H.export(c,end)
+    return out

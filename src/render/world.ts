@@ -29,7 +29,7 @@ const SHAKE: Record<string, [number, number]> = {
 const SMOOTH = new Set(['idle', 'walk', 'crouch', 'prejump', 'land', 'jump', 'dash', 'backdash', 'getup', 'victory', 'taunt']);
 const KO_SLOW = { delay: 0.33, length: 1.5, scale: 0.3 };
 /** metres between two models' torso centres at the closest: chest to chest, side-on */
-const TORSO_GAP = 0.5;
+const TORSO_GAP = 0.6;
 /** strike step-in: frames to close in before contact, frames to ease back after, the most it may move, and
  * how far short of the opponent's centre a fist or foot should stop (about the body's half depth) */
 const LUNGE_LEAD = 4;
