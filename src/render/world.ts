@@ -80,6 +80,7 @@ export class World {
   private flashing = [false, false];
   private glowing = [false, false];
   private shake = { amp: 0, from: 0, until: 0 };
+  private sizeTmp = new THREE.Vector2();
   private shaken = -1;
   private ko: { loser: number; from: number } | null = null;
   private superCam: { side: number; until: number } | null = null;
@@ -406,7 +407,7 @@ export class World {
     let sy = 0;
     if (t < this.shake.until) {
       const k = 1 - (t - this.shake.from) / (this.shake.until - this.shake.from);
-      const perPx = (2 * this.camDist * Math.tan((FOV * Math.PI) / 360)) / Math.max(1, this.renderer.domElement.clientHeight);
+      const perPx = (2 * this.camDist * Math.tan((FOV * Math.PI) / 360)) / Math.max(1, this.renderer.getSize(this.sizeTmp).y);
       sx = (Math.random() * 2 - 1) * this.shake.amp * perPx * k;
       sy = (Math.random() * 2 - 1) * this.shake.amp * perPx * k;
     }

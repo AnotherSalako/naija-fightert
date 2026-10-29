@@ -59,7 +59,7 @@ describe('clipFor', () => {
   });
 
   it('falls back to the poses where no listed clip exists yet', () => {
-    expect(clipFor(fighter('attack', 3), move('6M'), 0, clips, set)).toBeNull();
+    expect(clipFor(fighter('attack', 3), move('22L'), 0, clips, set)).toBeNull();
     expect(clipFor(fighter('blockstun', 3), null, 0, clips, set)).toBeNull();
     expect(clipFor(fighter('getup', 3), null, 0, clips, set)).toBeNull();
     expect(clipFor(fighter('idle', 3), null, 0, clips, undefined)).toBeNull();
