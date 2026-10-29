@@ -424,6 +424,7 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
   // a change of clip, or between a clip and the poses, fades over FADE seconds from the last frame drawn
   let source = '';
   let fade = 1;
+  let fadeLen = FADE;
   let lastTime = 0;
   const from = restAll.map((r) => ({ q: r.q.clone(), p: r.p.clone() }));
 
@@ -575,6 +576,7 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
         if (source) restAll.forEach((r, i) => { from[i].q.copy(r.b.quaternion); from[i].p.copy(r.b.position); });
         // an entry may cut straight in (a body landing flat for a knockdown should not rise from the last pose)
         fade = source && !clip?.snap ? 0 : 1;
+        fadeLen = clip?.fadeSeconds ?? FADE;
         source = key;
       }
       if (action && clip) {
@@ -596,7 +598,7 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
       }
       if (fade < 1) {
         // at least one sim frame per draw: stepping the sim by hand (or a slow frame) still finishes the blend
-        fade = Math.min(1, fade + Math.max(dt, 1 / 60) / FADE);
+        fade = Math.min(1, fade + Math.max(dt, 1 / 60) / fadeLen);
         const k = fade * fade * (3 - 2 * fade);
         restAll.forEach((r, i) => {
           // slerpQuaternions copies its first argument into the target before reading the second, so

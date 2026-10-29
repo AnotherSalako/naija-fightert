@@ -23,6 +23,8 @@ export interface ClipPlay {
   aim?: number;
   /** cut straight in, without blending from the previous pose */
   snap?: boolean;
+  /** blend-in time in seconds when this clip starts; attacks use a short one so a 3-frame jab reaches its pose */
+  fadeSeconds?: number;
 }
 
 const FPS = 60;
@@ -32,6 +34,8 @@ const FOLLOW = 0.6;
 /** fastest the clip may run against real time: wind-up, then follow-through */
 const MAX_WIND = 2.2;
 const MAX_FOLLOW = 1.8;
+/** attacks blend in over about two frames: the stance-to-strike blend used to eat the whole startup */
+const ATTACK_FADE = 0.035;
 
 /** the animation-set state a fighter is in (directions and stances split some sim actions) */
 function stateKey(f: FighterState, vx: number): string {
@@ -63,7 +67,7 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     let time: number;
     if (f.frame < m.startup) time = start + (c.contact - start) * (f.frame / Math.max(1, m.startup));
     else time = c.contact + (end - c.contact) * Math.min(1, (f.frame - m.startup) / Math.max(1, m.active + m.recovery + m.animHoldFrames));
-    return { name: e.clip, time, lean: e.lean, aim: e.aim };
+    return { name: e.clip, time, lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE };
   }
 
   const e = usable(set.states[stateKey(f, vx)]);
