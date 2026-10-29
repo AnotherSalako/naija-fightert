@@ -1,5 +1,14 @@
 # Changelog
 
+## Ten more Mixamo clips for Egbon (29 Oct 2026)
+
+- New clips in `assets-src/egbon-razak/mixamo/anims/`: get-up, block, uppercut, sweep, dash, throw (shoulder
+  throw, aggressor), thrown (shoulder throw, victim), air-hit (big uppercut reaction), knockback (flying back)
+  and shoulder-charge (running tackle). Rebuilt with `tools/blender/prepare_character.py`, then Draco-compressed
+  with gltf-transform (pip's bpy has no Draco encoder): 2.44 MB, 23 clips. The animset table picks them up
+  with no code change (get-up now rises from the floor instead of popping up).
+- Still missing: an unarmed crouch-block (Mixamo only has sword and shield ones), fall-flat.
+
 ## Fix pass from the rdr1fx9fo playtest (29 Oct 2026)
 
 - Floor: the grounded clamp follows skinned vertices (the soles plus a sample of the whole body), so in

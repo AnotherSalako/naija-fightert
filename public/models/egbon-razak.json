@@ -9,6 +9,16 @@
     "cloth_trouser_R"
   ],
   "clips": {
+    "air-hit": {
+      "duration": 2.433,
+      "contact": 0.733,
+      "low": 1.133
+    },
+    "block": {
+      "duration": 2.767,
+      "contact": 0.8,
+      "low": 0.8
+    },
     "cross": {
       "duration": 2.0,
       "contact": 1.167,
@@ -19,10 +29,20 @@
       "contact": 1.1,
       "low": 1.133
     },
+    "dash": {
+      "duration": 0.533,
+      "contact": 0.333,
+      "low": 0.067
+    },
     "fighting-idle": {
       "duration": 3.3,
       "contact": 1.433,
       "low": 1.033
+    },
+    "get-up": {
+      "duration": 2.7,
+      "contact": 0.967,
+      "low": 0.267
     },
     "hit-reaction": {
       "duration": 0.433,
@@ -54,10 +74,40 @@
       "contact": 0.667,
       "low": 1.133
     },
+    "knockback": {
+      "duration": 3.033,
+      "contact": 0.867,
+      "low": 0.867
+    },
     "knockdown": {
       "duration": 4.933,
       "contact": 4.8,
       "low": 2.233
+    },
+    "shoulder-charge": {
+      "duration": 3.6,
+      "contact": 1.0,
+      "low": 2.033
+    },
+    "sweep": {
+      "duration": 1.733,
+      "contact": 0.833,
+      "low": 1.033
+    },
+    "throw": {
+      "duration": 6.667,
+      "contact": 4.733,
+      "low": 2.133
+    },
+    "thrown": {
+      "duration": 6.667,
+      "contact": 2.033,
+      "low": 5.633
+    },
+    "uppercut": {
+      "duration": 1.333,
+      "contact": 0.5,
+      "low": 0.333
     },
     "victory": {
       "duration": 4.5,
@@ -77,5 +127,5 @@
   },
   "facing": "+Z",
   "source": "tools/blender/prepare_character.py from egbon-rigged-tpose.fbx",
-  "bytes": 1750412
+  "bytes": 2444180
 }
