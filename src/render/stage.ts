@@ -246,8 +246,8 @@ export function buildStage(scene: THREE.Scene): StageView {
   scene.fog = new THREE.Fog(0x1a1230, 12, 40);
 
   // lights: dim cool fill, warm key from the front, accent rim from behind (they light the fighters)
-  scene.add(new THREE.HemisphereLight(0x4a5a9a, 0x3a2216, 0.6));
-  const key = new THREE.DirectionalLight(0xffd8a8, 1.7);
+  scene.add(new THREE.HemisphereLight(0x5a6cb4, 0x4a2c1a, 0.95));
+  const key = new THREE.DirectionalLight(0xffd8a8, 2.1);
   key.position.set(2, 6, 7);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xff8a3a, 1.5);

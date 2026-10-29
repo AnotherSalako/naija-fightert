@@ -20,7 +20,7 @@ export const SF4 = {
   uKeyColor: { value: new THREE.Color(1.0, 1.02, 1.1) },
   uKeyStrength: { value: 1.45 },
   uAmbient: { value: 0.16 },
-  uRim: { value: 1.2 },
+  uRim: { value: 1.5 },
   uRimPower: { value: 3.0 },
   uRimWarm: { value: new THREE.Color('#ffb36b') },
   uRimCool: { value: new THREE.Color('#86c4ff') },
@@ -28,16 +28,16 @@ export const SF4 = {
   uLine: { value: 0.16 },
   /** crease lines: normal-map curvature (per metre) above this is inked */
   uCrease: { value: 55.0 },
-  uInk: { value: 0.85 },
+  uInk: { value: 0.95 },
   uInkColor: { value: new THREE.Color('#1a0f0a') },
   /** grain in the shadow band */
   uNoise: { value: 0.1 },
   /** share of the toon bands over the PBR shading: 1 toon, 0.5 hybrid, 0 PBR (Dele, 29 Oct: hybrid) */
-  uToonMix: { value: 0.5 },
+  uToonMix: { value: 0.62 },
 };
 
 /** the looks to compare in dev (F3 cycles them): toon bands, the hybrid, plain PBR */
-export const LOOKS = { hybrid: 0.5, toon: 1, pbr: 0 } as const;
+export const LOOKS = { hybrid: 0.62, toon: 1, pbr: 0 } as const;
 export type Look = keyof typeof LOOKS;
 export function setLook(look: Look): void {
   SF4.uToonMix.value = LOOKS[look];

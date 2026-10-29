@@ -70,7 +70,7 @@ const THREE_QUARTER = 0.95;
 const STRIKE_TURN = 0.2;
 /** an authored clip is already a side-on fighting stance: it faces the opponent, turned only this far */
 const CLIP_TURN = 0.25;
-const OUTLINE_WIDTH = 0.011;
+const OUTLINE_WIDTH = 0.017;
 /** seconds a change between clips, or between a clip and the poses, takes to blend */
 const FADE = 0.1;
 /** vertices lower than this at rest (m) are the soles the floor clamp follows, at most SOLE_SAMPLES of them */
