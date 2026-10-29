@@ -17,8 +17,8 @@
     "knockdown": [{ "clip": "fall-flat", "at": "end", "snap": true }, { "clip": "knockdown", "at": "end", "snap": true }],
     "ko": [{ "clip": "fall-flat" }, { "clip": "knockdown", "lead": 1.2 }],
     "getup": [{ "clip": "get-up" }],
-    "grabbing": [{ "clip": "throw" }],
-    "grabbed": [{ "clip": "thrown" }],
+    "grabbing": [{ "clip": "throw", "from": 4.73 }],
+    "grabbed": [{ "clip": "thrown", "from": 1.6 }],
     "victory": [{ "clip": "victory" }]
   },
   "moves": {
