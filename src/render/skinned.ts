@@ -73,6 +73,8 @@ const CLIP_TURN = 0.25;
 const OUTLINE_WIDTH = 0.011;
 /** seconds a change between clips, or between a clip and the poses, takes to blend */
 const FADE = 0.1;
+/** a clip's time moving by more than this between two frames is a cut, not playback (hit-stop holds, 60 Hz steps are far smaller) */
+const CUT_SECONDS = 0.12;
 /** vertices lower than this at rest (m) are the soles the floor clamp follows, at most SOLE_SAMPLES of them */
 const SOLE_HEIGHT = 0.05;
 const SOLE_SAMPLES = 300;
@@ -422,6 +424,7 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
   // a change of clip, or between a clip and the poses, fades over FADE seconds from the last frame drawn
   let source = '';
   let fade = 1;
+  let lastTime = 0;
   const from = restAll.map((r) => ({ q: r.q.clone(), p: r.p.clone() }));
 
   const chest = bones.get('Spine2') ?? bones.get('Spine1');
@@ -564,7 +567,11 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
       turn += (aim - turn) * (1 - Math.pow(striking ? 0.35 : 0.8, dt * 60));
       yaw.rotation.y = facing * (Math.PI / 2 - turn);
       const key = action && clip ? clip.name : 'pose';
-      if (key !== source) {
+      // a jump in time inside one clip (pre-jump to take-off, a loop starting over after a move) is a cut
+      // like a change of clip: cross-fade it too, or the body pops by the whole difference in one frame
+      const cut = action && clip && key === source && Math.abs(clip.time - lastTime) > CUT_SECONDS && !clip.snap;
+      if (action && clip) lastTime = clip.time;
+      if (key !== source || cut) {
         if (source) restAll.forEach((r, i) => { from[i].q.copy(r.b.quaternion); from[i].p.copy(r.b.position); });
         // an entry may cut straight in (a body landing flat for a knockdown should not rise from the last pose)
         fade = source && !clip?.snap ? 0 : 1;
