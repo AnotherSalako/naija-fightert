@@ -282,6 +282,154 @@ def air_elbow(c):   # j.H: tip forward and drive the rear elbow down at the head
     air(c,13, hips=16, spine=8, lean=-30, head=14, R=(0.14,-0.20,-0.08), L=(0.04,0.10,-0.04), LF=(0.0,0.0,0.48), RF=(0.0,0.12,0.50))
     air(c,20)
 
+DOWN=dict(hl=82, sl=2, dip=0.84, LF=(0.04,-0.62,-0.11), RF=(-0.22,-0.95,-0.05), L=(0.30,0.55,-1.22), R=(-0.30,0.30,-1.38))
+COVER=dict(L=(-0.03,0.20,0.24), R=(0.09,-0.12,0.08))
+import math
+
+@move('hk-idle', 73, (1,'Head'))
+def idle(c):   # boxer's bounce, three bobs per loop, first frame = last frame
+    for i,f in enumerate(range(1,74,6)):
+        ph=(f-1)/72*2*math.pi
+        b=0.5-0.5*math.cos(ph*3)            # 0..1, three bounces
+        tw=2.5*math.sin(ph)
+        H.key(c,f, hips=tw, spine=-tw*0.5, dip=0.028*b, head=-tw, lean=-1.5*b,
+              L=(0,0.0,-0.018*b), R=(0,0.0,-0.02*b), LF=(0,0,0), RF=(0,0,0))
+
+def walk(c, speed, back, n=12):
+    n=n; travel=speed*n/2       # metres each foot slides while planted (half a cycle)
+    for f in range(1,n+2):
+        t=((f-1)%n)/n
+        def foot(phase):
+            u=(t+phase)%1.0
+            if u<0.5:   # planted: slides back under the body at walking speed
+                y=-travel/2+travel*(u/0.5); z=0.0
+            else:       # swings forward, lifted
+                v=(u-0.5)/0.5; y=travel/2-travel*v; z=0.07*math.sin(math.pi*v)
+            return (0.0, -y if back else y, z)
+        bob=0.5-0.5*math.cos(t*4*math.pi)
+        H.key(c,f, dip=0.02+0.025*bob, lean=(4 if back else -5), hips=3*math.sin(t*2*math.pi), spine=-1.5*math.sin(t*2*math.pi),
+              LF=foot(0.0), RF=foot(0.5), L=(0,0.02,-0.01*bob), R=(0,0.02,-0.012*bob))
+
+@move('hk-walk-fwd', 13, (1,'Head'))
+def walk_fwd(c): walk(c, 0.05, False)
+
+@move('hk-walk-back', 13, (1,'Head'))
+def walk_back(c): walk(c, 0.038, True)
+
+@move('hk-crouch', 81, (1,'Head'))
+def crouch_idle(c):
+    for f in range(1,82,10):
+        b=0.5-0.5*math.cos((f-1)/80*2*math.pi*2)
+        crouch(c,f, dip=0.24+0.012*b, L=(0.02,0.12,-0.14-0.01*b), R=(0.03,0.05,-0.14-0.012*b))
+
+@move('hk-block', 25, (3,'LeftHand'))
+def block(c):
+    H.key(c,1)
+    H.key(c,3, lean=6, dip=0.05, head=-4, **COVER)
+    H.key(c,6, lean=10, dip=0.06, fwd=-0.03, head=-6, **COVER)
+    H.key(c,14, lean=6, dip=0.05, fwd=-0.02, head=-4, **COVER)
+    H.key(c,25, lean=5, dip=0.05, fwd=-0.02, head=-4, **COVER)
+
+@move('hk-crouch-block', 25, (3,'LeftHand'))
+def crouch_block(c):
+    crouch(c,1)
+    crouch(c,3, lean=-6, dip=0.28, L=(-0.03,0.22,0.02), R=(0.09,-0.10,-0.10))
+    crouch(c,6, lean=-2, dip=0.29, fwd=-0.03, L=(-0.03,0.22,0.02), R=(0.09,-0.10,-0.10))
+    crouch(c,25, lean=-5, dip=0.28, fwd=-0.02, L=(-0.03,0.22,0.02), R=(0.09,-0.10,-0.10))
+
+@move('hk-hit', 27, (3,'Head'))
+def hit(c):
+    H.key(c,1)
+    H.key(c,3, hips=6, lean=14, dip=0.03, fwd=-0.06, head=10, L=(0.06,0.18,0.02), R=(-0.06,0.14,-0.08), extra={'Neck':(0,8,0),'Head':(0,10,0)})
+    H.key(c,8, hips=5, lean=11, dip=0.04, fwd=-0.05, head=8, L=(0.04,0.14,0.0), R=(-0.04,0.10,-0.06), extra={'Neck':(0,6,0),'Head':(0,6,0)})
+    H.key(c,17, hips=2, lean=4, dip=0.03, fwd=-0.02, head=3, L=(0.01,0.04,0.0), R=(-0.01,0.03,-0.02), extra={'Neck':(0,2,0),'Head':(0,2,0)})
+    H.key(c,27, extra={'Neck':(0,0,0),'Head':(0,0,0)})
+
+@move('hk-crouch-hit', 27, (3,'Head'))
+def crouch_hit(c):
+    crouch(c,1)
+    crouch(c,3, hips=6, lean=2, dip=0.27, fwd=-0.05, head=8, L=(0.06,0.20,-0.10), R=(-0.04,0.14,-0.20))
+    crouch(c,10, hips=4, lean=-4, dip=0.26, fwd=-0.04, head=6)
+    crouch(c,27)
+
+@move('hk-airhit', 41, (6,'Head'))
+def airhit(c):
+    H.key(c,1, lean=12, fwd=-0.04, head=8, L=(0.06,0.18,0.02), R=(-0.06,0.14,-0.06))
+    H.key(c,6, hl=28, sl=9, dip=-0.04, head=10, LF=(0.0,-0.36,0.34), RF=(0.0,-0.30,0.30), L=(0.12,0.45,0.28), R=(-0.12,0.36,0.18), extra={'Neck':(0,10,0),'Head':(0,10,0)})
+    H.key(c,20, hl=34, sl=10, dip=-0.04, head=10, LF=(0.0,-0.40,0.40), RF=(0.0,-0.26,0.28), L=(0.14,0.50,0.22), R=(-0.14,0.40,0.12), extra={'Neck':(0,10,0),'Head':(0,10,0)})
+    H.key(c,41, hl=30, sl=9, dip=-0.04, head=8, LF=(0.0,-0.38,0.36), RF=(0.0,-0.28,0.30), L=(0.12,0.46,0.24), R=(-0.12,0.38,0.14), extra={'Neck':(0,9,0),'Head':(0,9,0)})
+
+@move('hk-down', 41, (1,'Hips'))
+def down(c):   # lying on the back, breathing
+    H.key(c,1, **DOWN)
+    d=dict(DOWN); d['sl']=3.5; H.key(c,20, **d)
+    H.key(c,41, **DOWN)
+
+@move('hk-ko', 91, (1,'Hips'))
+def ko(c):   # thrown back by the last hit, lands and stays down
+    H.key(c,1, lean=12, fwd=-0.04, head=8)
+    H.key(c,8, hl=30, sl=9, dip=-0.04, head=10, LF=(0.0,-0.36,0.34), RF=(0.0,-0.30,0.30), L=(0.12,0.45,0.28), R=(-0.12,0.36,0.18))
+    H.key(c,30, **DOWN)
+    H.key(c,91, **DOWN)
+
+@move('hk-getup', 14, (13,'Head'))
+def getup(c):   # 12 frames: sit up, plant, rise
+    H.key(c,1, **DOWN)
+    H.key(c,5, hl=24, sl=8, dip=0.58, fwd=0.02, head=-6, LF=(0.02,-0.30,-0.12), RF=(-0.10,-0.40,-0.10), L=(0.26,0.40,-0.95), R=(-0.20,0.12,-1.05))
+    crouch(c,9, dip=0.26, lean=-8)
+    H.key(c,14)
+
+@move('hk-victory', 151, (40,'LeftHand'))
+def victory(c):
+    H.key(c,1)
+    H.key(c,15, dip=-0.02, lean=6, head=4, L=(0.10,0.34,0.58), R=(-0.08,0.22,0.42), LF=(0,0.04,0), extra={'Neck':(0,6,0),'Head':(0,4,0)})
+    H.key(c,32, dip=0.01, lean=4, head=4, L=(0.10,0.34,0.40), R=(-0.08,0.22,0.30), LF=(0,0.04,0), extra={'Neck':(0,4,0),'Head':(0,3,0)})
+    H.key(c,44, dip=-0.02, lean=6, head=4, L=(0.10,0.34,0.60), R=(-0.08,0.22,0.44), LF=(0,0.04,0), extra={'Neck':(0,6,0),'Head':(0,4,0)})
+    H.key(c,80, hips=8, dip=-0.01, lean=3, head=-6, L=(-0.16,0.36,-0.04), R=(0.22,-0.04,-0.14), LF=(0,0.06,0), extra={'Neck':(0,5,0),'Head':(0,6,0)})
+    H.key(c,151, hips=8, dip=-0.01, lean=3, head=-6, L=(-0.16,0.36,-0.04), R=(0.22,-0.04,-0.14), LF=(0,0.06,0), extra={'Neck':(0,5,0),'Head':(0,6,0)})
+
+@move('hk-taunt', 51, (10,'LeftHand'))
+def taunt(c):   # lead hand beckons twice: come on
+    H.key(c,1)
+    for f,y in ((8,-0.24),(15,-0.04),(22,-0.24),(29,-0.04)):
+        H.key(c,f, lean=5, dip=0.01, head=6, L=(-0.02,y,0.12), R=(0.02,0.04,0.02), extra={'Neck':(0,4,-6),'Head':(0,3,-6)})
+    H.key(c,40, lean=3, head=3, L=(-0.01,-0.04,0.06), extra={'Neck':(0,2,-3),'Head':(0,2,-3)})
+    H.key(c,51, extra={'Neck':(0,0,0),'Head':(0,0,0)})
+
+@move('hk-dash', 15, (6,'Hips'))
+def dash(c):
+    H.key(c,1)
+    H.key(c,3, dip=0.05, lean=-8, LF=(0,0.02,0), RF=(0,0.04,0.02))
+    H.key(c,6, dip=-0.03, lean=-10, LF=(0,-0.12,0.08), RF=(0,-0.06,0.12), L=(0,0.02,0.02))
+    H.key(c,10, dip=0.05, lean=-6, LF=(0,-0.04,0.0), RF=(0,0.06,0.02))
+    H.key(c,15)
+
+@move('hk-backdash', 19, (7,'Hips'))
+def backdash(c):
+    H.key(c,1)
+    H.key(c,3, dip=0.05, lean=6, LF=(0,-0.02,0.02), RF=(0,0.0,0))
+    H.key(c,7, dip=-0.03, lean=10, LF=(0,0.06,0.12), RF=(0,0.12,0.08), L=(0,0.06,0.04), R=(0,0.04,0.02))
+    H.key(c,13, dip=0.05, lean=5, LF=(0,0.0,0.0), RF=(0,0.04,0.0))
+    H.key(c,19)
+
+@move('hk-prejump', 5, (5,'Hips'))
+def prejump(c):
+    H.key(c,1)
+    H.key(c,5, dip=0.12, lean=-6, L=(0,0.02,-0.06), R=(0,0.02,-0.06))
+
+@move('hk-jump', 41, (8,'Hips'))
+def jump(c):   # 40 frames of airtime: push off, tuck, open up for the landing
+    H.key(c,1, dip=-0.03, lean=-4, LF=(0,0.02,0.04), RF=(0,0.04,0.06))
+    H.key(c,8, lean=-6, LF=(0.0,0.06,0.40), RF=(0.0,-0.12,0.34), L=(0,0.04,0.04), R=(0,0.02,0.04))
+    H.key(c,30, lean=-5, LF=(0.0,0.06,0.38), RF=(0.0,-0.12,0.32), L=(0,0.04,0.04), R=(0,0.02,0.04))
+    H.key(c,38, lean=-3, LF=(0.0,0.0,0.08), RF=(0.0,0.0,0.06))
+    H.key(c,41)
+
+@move('hk-land', 5, (1,'Hips'))
+def land(c):
+    H.key(c,1, dip=0.10, lean=-6)
+    H.key(c,5)
+
 def run(names=None, export=True):
     out=[]
     for n,(fn,end,(cf,limb)) in MOVES.items():

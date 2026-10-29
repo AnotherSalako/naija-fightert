@@ -70,12 +70,12 @@ def ensure_poles(ctx):
 def rq(ctx,bn,twist=0,lean=0,side=0):
     q=Quaternion(ctx['b'][P+bn][1])
     return q @ Quaternion(Y,math.radians(twist)) @ Quaternion(Z,math.radians(lean)) @ Quaternion(X,math.radians(side))
-def key(ctx,f,hips=0,spine=0,lean=0,side=0,dip=0,fwd=0,lat=0,head=0,R=None,L=None,LF=None,RF=None,extra=None):
+def key(ctx,f,hips=0,spine=0,lean=0,side=0,dip=0,fwd=0,lat=0,head=0,R=None,L=None,LF=None,RF=None,extra=None,hl=None,sl=None,hs=None):
     a=arm(); bpy.context.scene.frame_set(f)
     h=a.pose.bones[P+'Hips']
     h.location=Vector(ctx['b'][P+'Hips'][0])+Vector((lat*100,-dip*100,fwd*100))
-    h.rotation_quaternion=rq(ctx,'Hips',hips,lean*0.4,side*0.4); h.keyframe_insert('location',frame=f)
-    for bn in ['Spine','Spine1','Spine2']: a.pose.bones[P+bn].rotation_quaternion=rq(ctx,bn,spine,lean*0.2,side*0.2)
+    h.rotation_quaternion=rq(ctx,'Hips',hips,lean*0.4 if hl is None else hl,side*0.4 if hs is None else hs); h.keyframe_insert('location',frame=f)
+    for bn in ['Spine','Spine1','Spine2']: a.pose.bones[P+bn].rotation_quaternion=rq(ctx,bn,spine,lean*0.2 if sl is None else sl,side*0.2)
     a.pose.bones[P+'Neck'].rotation_quaternion=rq(ctx,'Neck',-head*0.5)
     a.pose.bones[P+'Head'].rotation_quaternion=rq(ctx,'Head',-head*0.5)
     for bn,(tw,ln,sd) in (extra or {}).items(): a.pose.bones[P+bn].rotation_quaternion=rq(ctx,bn,tw,ln,sd)
