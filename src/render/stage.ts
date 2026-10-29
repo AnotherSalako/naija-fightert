@@ -248,8 +248,17 @@ export function buildStage(scene: THREE.Scene): StageView {
   // lights: dim cool fill, warm key from the front, accent rim from behind (they light the fighters)
   scene.add(new THREE.HemisphereLight(0x4a5a9a, 0x3a2216, 0.6));
   const key = new THREE.DirectionalLight(0xffd8a8, 1.7);
+  key.name = 'key';
   key.position.set(2, 6, 7);
+  // real shadows from the key: the fighters on the ground and on themselves (world.ts moves this with the camera)
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -2, near: 1, far: 22 });
+  key.shadow.bias = -0.0006;
+  key.shadow.normalBias = 0.025;
+  key.shadow.radius = 4;
   scene.add(key);
+  scene.add(key.target);
   const rim = new THREE.DirectionalLight(0xff8a3a, 1.5);
   rim.position.set(-3, 4, -6);
   scene.add(rim);
@@ -272,6 +281,7 @@ export function buildStage(scene: THREE.Scene): StageView {
   groundTex.repeat.set(10, 5);
   const ground = mesh(new THREE.PlaneGeometry(80, 40), lambert({ map: groundTex }), 0, 0, -10);
   ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
   g.add(ground);
   const kerb = mesh(new THREE.BoxGeometry(40, 0.18, 0.4), lambert({ color: 0x6a6258 }), 0, 0.09, -2.0);
   g.add(kerb);

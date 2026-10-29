@@ -14,7 +14,7 @@ import { animSet } from './animsets';
 import type { ClipInfo, ClipPlay } from './clips';
 import { applyPose, buildMannequin } from './mannequin';
 import type { Pose } from './poses';
-import { applySf4 } from './sf4';
+import { SF4, applySf4 } from './sf4';
 
 export interface Outline {
   mat: THREE.MeshBasicMaterial;
@@ -299,6 +299,8 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
       tex.needsUpdate = true;
     }
     mesh.material = mat;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
     materials.push(mat);
     // an outline shell that bends with the skin: the back faces, pushed out along the normals
     const base = src.map ? new THREE.Color('#1c120b') : src.color.clone().multiplyScalar(0.3);
@@ -310,10 +312,11 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
     omat.onBeforeCompile = (shader) => {
       // pushed out in bind space, before skinning, so the shell deforms exactly like the body; along
       // smoothed normals, or a generated mesh's noisy ones poke the shell through the front as streaks
+      shader.uniforms.uOutline = SF4.uOutline;
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute vec3 outlineNormal;')
+        .replace('#include <common>', '#include <common>\nattribute vec3 outlineNormal;\nuniform float uOutline;')
         .replace('#include <begin_vertex>',
-          `#include <begin_vertex>\ntransformed += normalize(outlineNormal) * ${OUTLINE_WIDTH.toFixed(4)};`);
+          `#include <begin_vertex>\ntransformed += normalize(outlineNormal) * ${OUTLINE_WIDTH.toFixed(4)} * uOutline;`);
     };
     omat.customProgramCacheKey = () => 'nf-outline';
     let shell: THREE.Mesh;

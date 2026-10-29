@@ -34,13 +34,16 @@ export const SF4 = {
   uNoise: { value: 0.1 },
   /** share of the toon bands over the PBR shading: 1 toon, 0.5 hybrid, 0 PBR (Dele, 29 Oct: hybrid) */
   uToonMix: { value: 0.5 },
+  /** 1 draws the ink outline shell, 0 collapses it (the lifelike look has no ink) */
+  uOutline: { value: 1 },
 };
 
 /** the looks to compare in dev (F3 cycles them): toon bands, the hybrid, plain PBR */
-export const LOOKS = { hybrid: 0.5, toon: 1, pbr: 0 } as const;
+export const LOOKS = { real: 0, hybrid: 0.5, toon: 1, pbr: 0 } as const;
 export type Look = keyof typeof LOOKS;
 export function setLook(look: Look): void {
   SF4.uToonMix.value = LOOKS[look];
+  SF4.uOutline.value = look === 'real' ? 0 : 1;
 }
 
 const PARS = /* glsl */ `

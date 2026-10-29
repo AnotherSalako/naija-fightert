@@ -17,6 +17,7 @@ import { clipFor, type ClipPlay } from './clips';
 import { blend, poseFor, type Pose } from './poses';
 import { loadModel, mannequinBody, setFighterAnisotropy, skinnedBody, type Body, type Outline } from './skinned';
 import { buildStage, type StageView } from './stage';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 const M = (subUnits: number): number => subUnits / SUB / 100;
 
@@ -95,6 +96,12 @@ export class World {
     // filmic tone mapping; exposure set for the fighters, who carry their own light (sf4.ts)
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = EXPOSURE;
+    // real shadows (the key light in stage.ts) and soft image-based light, so skin and cloth have a sheen
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    this.scene.environmentIntensity = 0.5;
     setFighterAnisotropy(this.renderer.capabilities.getMaxAnisotropy());
     container.appendChild(this.renderer.domElement);
     this.stage = buildStage(this.scene);
@@ -407,6 +414,9 @@ export class World {
     const below = 0.35 * Math.min(1, this.camDist / Math.max(0.01, target.distance));
     this.camera.position.set(this.camX + sx, this.camLook - below + sy, this.camDist);
     this.camera.lookAt(this.camX + sx, this.camLook + sy, 0);
+    // the shadow-casting key light travels with the fighters
+    const key = this.scene.getObjectByName('key') as THREE.DirectionalLight | undefined;
+    if (key) { key.position.set(this.camX + 2, 6, 7); key.target.position.set(this.camX, 0, 0); key.target.updateMatrixWorld(); }
     if (this.inspect) {
       this.camera.position.set(this.inspect.x, this.inspect.y, this.inspect.distance);
       this.camera.lookAt(this.inspect.x, this.inspect.y, 0);

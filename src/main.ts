@@ -63,7 +63,8 @@ function updateHint(): void {
   hud.setP2Label(P2_MODES[p2Mode].startsWith('cpu') ? 'CPU' : 'P2');
   hint.textContent = `P1: WASD + J K L ; · I throw · O taunt · P2 (${P2_MODES[p2Mode]}): arrows + numpad 1 2 3 0 · F1 player 2 · M sound · Esc pause${DEV ? ` · F2 boxes · F3 look: ${look}` : ''}`;
 }
-let look: Look = 'hybrid';
+let look: Look = 'real';
+setLook(look);
 
 // browsers only start audio after the player does something
 for (const ev of ['keydown', 'pointerdown', 'touchstart', 'gamepadconnected']) window.addEventListener(ev, () => sfx.unlock(), { passive: true });
