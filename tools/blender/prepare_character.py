@@ -48,6 +48,7 @@ def parse():
     p.add_argument('--id', required=True)
     p.add_argument('--model', required=True)
     p.add_argument('--anims', default='')
+    p.add_argument('--own-rig', action='store_true', help='the model carries our own skeleton: retarget every clip onto it')
     p.add_argument('--out', default='public/models')
     p.add_argument('--tris', type=int, default=50000)
     p.add_argument('--texture', type=int, default=2048)
@@ -207,6 +208,84 @@ def in_place(arm, act, name: str) -> None:
                 k.co[1] = k.handle_left[1] = k.handle_right[1] = first
 
 
+REF_HIPS = None
+
+
+def retarget_onto(arm, src, act, name: str):
+    """A new action on `arm` (our own skeleton) that reproduces `src` playing `act`. Each bone takes the
+    source bone's world rotation, corrected by the difference between the two rests (the source rest bone
+    swung onto ours keeps our roll); joints stay where our skeleton puts them; the hips travel is scaled
+    to our proportions; the forearm twist bones take half the wrist's twist."""
+    sc = bpy.context.scene
+    srcb = {b.name.split(':')[-1]: b for b in src.pose.bones}
+    A, S = arm.matrix_world, src.matrix_world
+    offs = {}
+    for pb in arm.pose.bones:
+        s = srcb.get(pb.name)
+        if not s:
+            continue
+        tr = (A @ pb.bone.matrix_local).to_3x3().normalized()
+        sr = (S @ s.bone.matrix_local).to_3x3().normalized()
+        swing = tr.col[1].rotation_difference(sr.col[1]).to_matrix()
+        offs[pb.name] = sr.inverted() @ (swing @ tr)
+    hip_t = (A @ arm.pose.bones['Hips'].bone.matrix_local).translation
+    # the hips travel is measured from one shared reference, the Mixamo rest: every clip of this character
+    # shares its world frame, but files exported from Blender carry a rest pose of their own
+    global REF_HIPS
+    if REF_HIPS is None and not name.startswith('hk-'):
+        REF_HIPS = (S @ srcb['Hips'].bone.matrix_local).translation.copy()
+    hip_s = REF_HIPS if REF_HIPS is not None else (S @ srcb['Hips'].bone.matrix_local).translation
+    ratio = hip_t.z / max(1e-6, hip_s.z)
+    new = bpy.data.actions.new(name + '__rt')
+    arm.animation_data_create()
+    keep = arm.animation_data.action
+    arm.animation_data.action = new
+    for pb in arm.pose.bones:
+        pb.rotation_mode = 'QUATERNION'
+
+    def depth(b):
+        d = 0
+        while b.parent:
+            b, d = b.parent, d + 1
+        return d
+    levels: dict = {}
+    for pb in arm.pose.bones:
+        levels.setdefault(depth(pb.bone), []).append(pb)
+    start, end = (int(round(x)) for x in act.frame_range)
+    Ainv = A.inverted()
+    for fr in range(start, end + 1):
+        sc.frame_set(fr)
+        for pb in arm.pose.bones:
+            pb.location = (0, 0, 0)
+            pb.rotation_quaternion = (1, 0, 0, 0)
+        bpy.context.view_layer.update()
+        for lvl in sorted(levels):
+            for pb in levels[lvl]:
+                s = srcb.get(pb.name)
+                if s is None:
+                    continue
+                rot = ((S @ s.matrix).to_3x3().normalized() @ offs[pb.name]).to_quaternion()
+                if pb.name == 'Hips':
+                    head = hip_t + ((S @ s.matrix).translation - hip_s) * ratio
+                else:
+                    head = (A @ pb.matrix).translation
+                pb.matrix = Ainv @ mathutils.Matrix.LocRotScale(head, rot, mathutils.Vector((1, 1, 1)))
+            bpy.context.view_layer.update()
+        for side in ('Left', 'Right'):
+            h, t = arm.pose.bones.get(side + 'Hand'), arm.pose.bones.get(side + 'ForeArmTwist')
+            if h and t:
+                q = h.rotation_quaternion
+                tw = mathutils.Quaternion((q.w, 0.0, q.y, 0.0)).normalized()
+                t.rotation_quaternion = mathutils.Quaternion((1, 0, 0, 0)).slerp(tw, 0.5)
+        f = fr - start + 1
+        for pb in arm.pose.bones:
+            pb.keyframe_insert('rotation_quaternion', frame=f)
+        arm.pose.bones['Hips'].keyframe_insert('location', frame=f)
+    arm.animation_data.action = keep
+    new.use_fake_user = True
+    return new
+
+
 def bake_onto(arm, src, act, name: str):
     """A new action on `arm` that reproduces `src` playing `act`, frame by frame, in armature space."""
     sc = bpy.context.scene
@@ -299,7 +378,9 @@ def main() -> None:
             new = import_file(f)
             src = next((o for o in new if o.type == 'ARMATURE'), None)
             act = src.animation_data.action if src and src.animation_data else None
-            if act and f.stem.startswith('anim-hk-'):
+            if act and a.own_rig:
+                act = retarget_onto(arm, src, act, f.stem.removeprefix('anim-'))
+            elif act and f.stem.startswith('anim-hk-'):
                 # hand-keyed clips come from another export of the rig whose bone rests differ: copy the
                 # pose bone by bone (armature space) onto this skeleton instead of sharing the keys
                 act = bake_onto(arm, src, act, f.stem.removeprefix('anim-'))
@@ -331,7 +412,14 @@ def main() -> None:
                         v[0] = start + (v[0] - start) * k
     bpy.context.scene.render.fps, bpy.context.scene.render.fps_base = OUT_FPS, 1.0
 
-    # size, floor, facing
+    # size, floor, facing: measured on the body at rest (retargeting leaves the bones in a clip's last pose)
+    for pb in arm.pose.bones:
+        pb.location = (0, 0, 0)
+        pb.rotation_quaternion = (1, 0, 0, 0)
+        pb.rotation_euler = (0, 0, 0)
+        pb.scale = (1, 1, 1)
+    if arm.animation_data:
+        arm.animation_data.action = None
     data = json.loads((ROOT / 'src' / 'sim' / 'data' / f'{a.id}.json').read_text(encoding='utf-8'))
     height = data['height'] / 100
     bpy.context.view_layer.update()

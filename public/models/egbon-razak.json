@@ -3,7 +3,7 @@
   "file": "models/egbon-razak.glb",
   "height": 1.82,
   "triangles": 50000,
-  "bones": 43,
+  "bones": 28,
   "cloth": [
     "cloth_trouser_L",
     "cloth_trouser_R"
@@ -216,6 +216,6 @@
     }
   },
   "facing": "+Z",
-  "source": "tools/blender/prepare_character.py from egbon-rigged-tpose.fbx",
-  "bytes": 2496140
+  "source": "tools/blender/prepare_character.py from egbon-own-rig.fbx",
+  "bytes": 2311020
 }
