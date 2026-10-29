@@ -391,6 +391,7 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
     if (d) cloth.push({ ...d, angle: 0, speed: 0, prevLeg: 0, leg });
   }
   const q = new THREE.Quaternion();
+  const fadeTo = new THREE.Quaternion();
   const pivotAxis = new THREE.Vector3(-1, 0, 0);
   let turn = THREE_QUARTER;
 
@@ -591,7 +592,12 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
         fade = Math.min(1, fade + Math.max(dt, 1 / 60) / FADE);
         const k = fade * fade * (3 - 2 * fade);
         restAll.forEach((r, i) => {
-          r.b.quaternion.slerpQuaternions(from[i].q, r.b.quaternion, k);
+          // slerpQuaternions copies its first argument into the target before reading the second, so
+          // blending into the bone's own quaternion read back the *old* pose: every cross-fade froze
+          // the body on the last pose for the whole fade, then snapped to the new one (the stiff,
+          // glitchy look). Blend from a copy of the new pose instead.
+          fadeTo.copy(r.b.quaternion);
+          r.b.quaternion.slerpQuaternions(from[i].q, fadeTo, k);
           r.b.position.lerpVectors(from[i].p, r.b.position, k);
         });
       }

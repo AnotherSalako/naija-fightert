@@ -243,7 +243,7 @@ export function buildStage(scene: THREE.Scene): StageView {
   scene.add(g);
   const r = rng(7);
   scene.background = new THREE.Color(0x120e26);
-  scene.fog = new THREE.Fog(0x1a1230, 12, 40);
+  scene.fog = new THREE.Fog(0x2a1c34, 9, 38); // a warm night haze that softens the far stalls
 
   // lights: dim cool fill, warm key from the front, accent rim from behind (they light the fighters)
   scene.add(new THREE.HemisphereLight(0x4a5a9a, 0x3a2216, 0.6));
@@ -279,7 +279,8 @@ export function buildStage(scene: THREE.Scene): StageView {
   // ground: packed earth, wet in places
   const groundTex = groundTexture();
   groundTex.repeat.set(10, 5);
-  const ground = mesh(new THREE.PlaneGeometry(80, 40), lambert({ map: groundTex }), 0, 0, -10);
+  // wet packed earth: a glossy standard material, so the soft environment light and the lanterns shine on it
+  const ground = mesh(new THREE.PlaneGeometry(80, 40), new THREE.MeshStandardMaterial({ map: groundTex, roughness: 0.42, metalness: 0.15 }), 0, 0, -10);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   g.add(ground);
