@@ -27,7 +27,46 @@ def begin(name):
         e=bpy.data.objects['IK_'+n]; e.animation_data_clear(); e.location=mw@a.pose.bones[P+n].head; E0[n]=e.location.copy()
     for c in iks: c.mute=False
     bpy.context.view_layer.update()
-    return {'b':b,'E0':E0,'name':name}
+    ctx={'b':b,'E0':E0,'name':name}
+    ensure_poles(ctx)
+    return ctx
+def ensure_poles(ctx):
+    """Knee aim targets: parented to the hips so they turn with the body, angle found so the stance is unchanged."""
+    import math
+    a=arm(); mw=a.matrix_world; sc=bpy.context.scene
+    iks={pb.name:c for pb in a.pose.bones for c in pb.constraints if c.type=='IK'}
+    for side in ['Left','Right']:
+        leg=P+side+'Leg'; c=iks[leg]
+        name='POLE_'+side+'Leg'
+        e=bpy.data.objects.get(name)
+        # base knee position with all IK muted
+        for k in iks.values(): k.mute=True
+        bpy.context.view_layer.update()
+        knee=(mw@a.pose.bones[leg].head).copy()
+        if e is None:
+            e=bpy.data.objects.new(name,None); sc.collection.objects.link(e); e.empty_display_type='CUBE'; e.empty_display_size=0.04
+            e.parent=a; e.parent_type='BONE'; e.parent_bone=P+'Hips'
+            bpy.context.view_layer.update()
+            hip=(mw@a.pose.bones[P+side+'UpLeg'].head); foot=(mw@a.pose.bones[P+side+'Foot'].head)
+            mid=(hip+foot)/2; out=(knee-mid); out.z=0
+            if out.length<1e-3: out=Vector((0,-1,0))
+            out=out.normalized()*0.5+Vector((0,-0.15,0))
+            e.matrix_world=__import__('mathutils').Matrix.Translation(knee+out)
+            print('pole', side, tuple(round(x,2) for x in knee), tuple(round(x,2) for x in out))
+        for k in iks.values(): k.mute=False
+        c.pole_target=e
+        best=(1e9,0)
+        for ang in range(-180,181,2):
+            c.pole_angle=math.radians(ang); bpy.context.view_layer.update()
+            d=(mw@a.pose.bones[leg].head-knee).length
+            if d<best[0]: best=(d,ang)
+        for ang in [best[1]+x*0.25 for x in range(-8,9)]:
+            c.pole_angle=math.radians(ang); bpy.context.view_layer.update()
+            d=(mw@a.pose.bones[leg].head-knee).length
+            if d<best[0]: best=(d,ang)
+        c.pole_angle=math.radians(best[1]); bpy.context.view_layer.update()
+        ctx.setdefault('poles',{})[side]=(round(best[1],2), round(best[0],4))
+
 def rq(ctx,bn,twist=0,lean=0,side=0):
     q=Quaternion(ctx['b'][P+bn][1])
     return q @ Quaternion(Y,math.radians(twist)) @ Quaternion(Z,math.radians(lean)) @ Quaternion(X,math.radians(side))

@@ -73,7 +73,9 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     return { name: e.clip, time, lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE, center: e.center };
   }
 
-  const e = usable(set.states[stateKey(f, vx)]);
+  // a state may be specialised by the move that led to it ("grabbing:63214H" for the headbutt's hold)
+  const key = stateKey(f, vx);
+  const e = (f.moveId ? usable(set.states[`${key}:${f.moveId}`]) : undefined) ?? usable(set.states[key]);
   if (!e) return null;
   const c = clips[e.clip];
   const at = (v: 'low' | 'end' | number): number => (v === 'low' ? c.low ?? 0 : v === 'end' ? c.duration : v);

@@ -10,8 +10,9 @@ import type { FighterState, MoveData } from '../src/sim/types';
 const set = animSet('egbon-razak');
 const clips: Record<string, ClipInfo> = {
   'fighting-idle': { duration: 3.3, contact: 0, low: 1 },
-  jab: { duration: 1.033, contact: 0.567, low: 0.4 },
-  hook: { duration: 2.167, contact: 1.0, low: 0.7 },
+  'hk-jab': { duration: 0.167, contact: 0.05, low: 0.05 },
+  'hk-rush': { duration: 0.5, contact: 0.217, low: 0.1 },
+  'hk-uppercut': { duration: 0.55, contact: 0.183, low: 0.08 },
   'walk-forward': { duration: 1.367, contact: 0, low: 0.3 },
   'walk-back': { duration: 0.867, contact: 0, low: 0.4 },
   'hit-reaction': { duration: 0.433, contact: 0.2, low: 0.17 },
@@ -23,12 +24,21 @@ const move = (id: string, startup = 3): MoveData => ({ id, startup, active: 2, r
 const jab = move('5L');
 
 describe('clipFor', () => {
-  it('lands an attack clip\'s contact on the first active frame', () => {
-    expect(clipFor(fighter('attack', jab.startup), jab, 0, clips, set)).toMatchObject({ name: 'jab', time: 0.567 });
-    expect(clipFor(fighter('attack', 1), jab, 0, clips, set)!.time).toBeLessThan(0.567);
-    const after = clipFor(fighter('attack', jab.startup + 4), jab, 0, clips, set)!;
-    expect(after.time).toBeGreaterThan(0.567);
-    expect(after.time).toBeLessThanOrEqual(clips.jab.duration);
+  it('plays a hand-keyed move frame for frame, from its first frame, and holds its last', () => {
+    expect(clipFor(fighter('attack', 1), jab, 0, clips, set)).toMatchObject({ name: 'hk-jab', time: 0 });
+    expect(clipFor(fighter('attack', 3), jab, 0, clips, set)!.time).toBeCloseTo(2 / 60);
+    expect(clipFor(fighter('attack', 40), jab, 0, clips, set)!.time).toBe(clips['hk-jab'].duration);
+  });
+
+  it('squeezes a shared clip (Park Rush) so its contact lands on the first active frame of each strength', () => {
+    for (const startup of [8, 10, 12, 15]) {
+      const rush = move('236L', startup);
+      expect(clipFor(fighter('attack', startup), rush, 0, clips, set)).toMatchObject({ name: 'hk-rush', time: 0.217 });
+      expect(clipFor(fighter('attack', 1), rush, 0, clips, set)!.time).toBeLessThan(0.217);
+      const after = clipFor(fighter('attack', startup + 4), rush, 0, clips, set)!;
+      expect(after.time).toBeGreaterThan(0.217);
+      expect(after.time).toBeLessThanOrEqual(clips['hk-rush'].duration);
+    }
   });
 
   it('depends only on the frame, so hit-stop freezes it and replays match', () => {
@@ -51,11 +61,8 @@ describe('clipFor', () => {
     for (const frame of [1, 20, 45]) expect(clipFor(fighter("knockdown", frame), null, 0, clips, set)).toMatchObject({ name: "knockdown", time: clips.knockdown.duration });
   });
 
-  it('plays 2H as the hook aimed upward until an uppercut clip arrives, then the uppercut', () => {
-    const twoH = move('2H', 8);
-    expect(clipFor(fighter('attack', 8), twoH, 0, clips, set)).toMatchObject({ name: 'hook', aim: 35 });
-    const withUppercut = { ...clips, uppercut: { duration: 1.5, contact: 0.5, low: 0.2 } };
-    expect(clipFor(fighter('attack', 8), twoH, 0, withUppercut, set)).toMatchObject({ name: 'uppercut', time: 0.5 });
+  it('plays 2H as the hand-keyed uppercut, frame for frame', () => {
+    expect(clipFor(fighter('attack', 8), move('2H', 8), 0, clips, set)).toMatchObject({ name: 'hk-uppercut', time: 7 / 60 });
   });
 
   it('falls back to the poses where no listed clip exists yet', () => {

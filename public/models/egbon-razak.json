@@ -19,11 +19,6 @@
       "contact": 0.8,
       "low": 0.8
     },
-    "cross": {
-      "duration": 2.0,
-      "contact": 1.167,
-      "low": 0.733
-    },
     "crouch-idle": {
       "duration": 2.5,
       "contact": 1.1,
@@ -49,6 +44,21 @@
       "contact": 0.233,
       "low": 0.167
     },
+    "hk-air-elbow": {
+      "duration": 0.317,
+      "contact": 0.067,
+      "low": 0.0
+    },
+    "hk-air-kick": {
+      "duration": 0.283,
+      "contact": 0.2,
+      "low": 0.0
+    },
+    "hk-air-knee": {
+      "duration": 0.283,
+      "contact": 0.067,
+      "low": 0.0
+    },
     "hk-backhand": {
       "duration": 0.45,
       "contact": 0.15,
@@ -69,10 +79,50 @@
       "contact": 0.133,
       "low": 0.1
     },
+    "hk-danfo-door": {
+      "duration": 0.667,
+      "contact": 0.117,
+      "low": 0.05
+    },
+    "hk-feint": {
+      "duration": 0.3,
+      "contact": 0.167,
+      "low": 0.167
+    },
+    "hk-flurry": {
+      "duration": 0.917,
+      "contact": 0.517,
+      "low": 0.5
+    },
+    "hk-grab": {
+      "duration": 0.55,
+      "contact": 0.133,
+      "low": 0.1
+    },
     "hk-haymaker": {
       "duration": 0.55,
       "contact": 0.15,
       "low": 0.217
+    },
+    "hk-headbutt": {
+      "duration": 0.75,
+      "contact": 0.75,
+      "low": 0.133
+    },
+    "hk-heave": {
+      "duration": 0.75,
+      "contact": 0.267,
+      "low": 0.2
+    },
+    "hk-held": {
+      "duration": 0.317,
+      "contact": 0.067,
+      "low": 0.0
+    },
+    "hk-hop-hammer": {
+      "duration": 0.5,
+      "contact": 0.233,
+      "low": 0.083
     },
     "hk-hop-kick": {
       "duration": 0.55,
@@ -99,10 +149,25 @@
       "contact": 0.267,
       "low": 0.2
     },
+    "hk-roundhouse": {
+      "duration": 0.633,
+      "contact": 0.083,
+      "low": 0.083
+    },
+    "hk-rush": {
+      "duration": 0.5,
+      "contact": 0.217,
+      "low": 0.133
+    },
     "hk-slap": {
       "duration": 0.383,
       "contact": 0.1,
       "low": 0.1
+    },
+    "hk-slide": {
+      "duration": 0.583,
+      "contact": 0.3,
+      "low": 0.233
     },
     "hk-step-elbow": {
       "duration": 0.5,
@@ -119,30 +184,10 @@
       "contact": 0.183,
       "low": 0.083
     },
-    "hook": {
-      "duration": 2.167,
-      "contact": 1.0,
-      "low": 0.7
-    },
-    "jab": {
-      "duration": 1.033,
-      "contact": 0.567,
-      "low": 0.433
-    },
     "jump": {
       "duration": 2.167,
       "contact": 1.1,
       "low": 0.533
-    },
-    "kick-medium": {
-      "duration": 1.6,
-      "contact": 0.5,
-      "low": 1.333
-    },
-    "kick-roundhouse": {
-      "duration": 1.667,
-      "contact": 0.667,
-      "low": 1.133
     },
     "knockback": {
       "duration": 3.033,
@@ -153,21 +198,6 @@
       "duration": 4.933,
       "contact": 4.8,
       "low": 2.233
-    },
-    "shoulder-charge": {
-      "duration": 3.6,
-      "contact": 1.0,
-      "low": 2.033
-    },
-    "sweep": {
-      "duration": 1.733,
-      "contact": 0.833,
-      "low": 1.033
-    },
-    "uppercut": {
-      "duration": 1.333,
-      "contact": 0.5,
-      "low": 0.333
     },
     "victory": {
       "duration": 4.5,
@@ -187,5 +217,5 @@
   },
   "facing": "+Z",
   "source": "tools/blender/prepare_character.py from egbon-rigged-tpose.fbx",
-  "bytes": 2474136
+  "bytes": 2496140
 }

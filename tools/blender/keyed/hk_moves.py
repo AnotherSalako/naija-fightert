@@ -143,6 +143,145 @@ def barge_short(c):   # 214A-3 Off-load (Barge): the rekka ender, a quicker shou
     H.key(c,28, hips=-10, spine=-4, lean=-6, dip=0.04, fwd=0.08, head=-5, LF=(0,-0.10,0), RF=(0,-0.04,0))
     H.key(c,42)
 
+AIR=dict(lean=-5, LF=(0.0,0.10,0.42), RF=(0.0,-0.02,0.36), L=(0.0,0.06,0.04), R=(0.0,0.03,0.03))
+def air(c,f,**kw):
+    d=dict(AIR); d.update(kw); H.key(c,f,**d)
+
+@move('hk-rush', 31, (10,'LeftHand'))
+def rush(c):   # 236x Park Rush: low dash, lead straight driven by the whole body, hit at frame 10 (played squeezed)
+    H.key(c,1)
+    H.key(c,4,  hips=-6, spine=-4, lean=-10, dip=0.08, fwd=0.04, head=-4, L=(0.0,0.06,-0.02), R=(0.02,0.02,-0.02), RF=(0,-0.06,0.08))
+    H.key(c,8,  hips=-10, spine=-8, lean=-18, dip=0.12, fwd=0.20, head=-8, L=(-0.04,-0.30,0.06), R=(0.03,0.04,0.0), LF=(0,-0.20,0.06), RF=(0,-0.10,0.10))
+    H.key(c,10, hips=-12, spine=-12, lean=-20, dip=0.12, fwd=0.30, head=-10, L=(-0.05,-0.52,0.12), R=(0.03,0.06,0.0), LF=(0,-0.30,0), RF=(0,-0.16,0.04))
+    H.key(c,13, hips=-12, spine=-12, lean=-20, dip=0.12, fwd=0.32, head=-10, L=(-0.05,-0.54,0.11), R=(0.03,0.06,0.0), LF=(0,-0.30,0), RF=(0,-0.18,0.0))
+    H.key(c,22, hips=-4, spine=-4, lean=-6, dip=0.05, fwd=0.14, L=(0.0,-0.10,0.03), LF=(0,-0.14,0), RF=(0,-0.08,0))
+    H.key(c,31)
+
+@move('hk-danfo-door', 41, (5,'RightHand'))
+def danfo_door(c):   # 623x: crouch, explode up with a rising uppercut and leave the floor, hit from frame 5
+    H.key(c,1)
+    crouch(c,3, hips=-10, spine=-4, dip=0.28, lean=-14, R=(0.02,0.0,-0.28))
+    H.key(c,5,  hips=18, spine=10, lean=4, dip=-0.10, fwd=0.04, head=12, R=(0.12,-0.36,0.28), L=(0.0,0.20,0.10), LF=(0,-0.04,0.12), RF=(0,0.0,0.08))
+    H.key(c,9,  hips=26, spine=14, lean=9, dip=-0.36, fwd=0.06, head=16, R=(0.16,-0.24,0.62), L=(0.0,0.22,0.16), LF=(0,-0.04,0.42), RF=(0,0.02,0.34))
+    H.key(c,14, hips=26, spine=14, lean=8, dip=-0.40, fwd=0.06, head=14, R=(0.14,-0.20,0.60), L=(0.0,0.22,0.16), LF=(0,-0.04,0.48), RF=(0,0.02,0.40))
+    H.key(c,24, hips=14, spine=8, lean=2, dip=-0.12, fwd=0.05, head=8, R=(0.08,-0.12,0.20), L=(0,0.14,0.08), LF=(0,-0.04,0.12), RF=(0,0.02,0.10))
+    crouch(c,30, dip=0.20, fwd=0.04, LF=(0,-0.04,0), RF=(0,0.02,0))
+    H.key(c,41)
+
+@move('hk-feint', 19, (10,'LeftArm'))
+def feint(c):   # 22L Bus Stop (feint): lunge the shoulder in like a rush, then pull back
+    H.key(c,1)
+    H.key(c,6,  hips=-8, spine=-6, lean=-12, dip=0.08, fwd=0.10, head=-6, L=(-0.02,-0.12,0.0), LF=(0,-0.12,0.04))
+    H.key(c,10, hips=-10, spine=-8, lean=-14, dip=0.10, fwd=0.16, head=-8, L=(-0.03,-0.18,0.02), LF=(0,-0.16,0))
+    H.key(c,14, hips=4, spine=2, lean=4, dip=0.04, fwd=0.04, head=2, L=(0.0,0.04,0.04), LF=(0,-0.06,0))
+    H.key(c,19)
+
+@move('hk-hop-hammer', 31, (14,'RightHand'))
+def hop_hammer(c):   # 22M Bus Stop (hop): small hop forward, two-handed hammer down (overhead), hit frame 14
+    H.key(c,1)
+    H.key(c,5,  dip=0.10, lean=-6, L=(0.0,0.04,-0.04), R=(0.0,0.02,-0.04))
+    H.key(c,10, hips=6, spine=4, lean=8, dip=-0.22, fwd=0.10, head=4, L=(0.06,-0.04,0.44), R=(0.16,-0.10,0.40), LF=(0,-0.10,0.30), RF=(0,-0.02,0.30))
+    H.key(c,14, hips=10, spine=6, lean=-18, dip=0.02, fwd=0.20, head=8, L=(0.04,-0.40,-0.06), R=(0.14,-0.44,-0.10), LF=(0,-0.20,0.02), RF=(0,-0.10,0.02))
+    H.key(c,17, hips=10, spine=6, lean=-20, dip=0.08, fwd=0.21, head=8, L=(0.04,-0.40,-0.16), R=(0.14,-0.44,-0.20), LF=(0,-0.20,0), RF=(0,-0.10,0))
+    H.key(c,24, hips=4, spine=2, lean=-8, dip=0.05, fwd=0.12, L=(0.0,-0.10,-0.04), R=(0.04,-0.10,-0.04), LF=(0,-0.12,0), RF=(0,-0.06,0))
+    H.key(c,31)
+
+@move('hk-slide', 36, (14,'LeftFoot'))
+def slide(c):   # 22H Bus Stop (slide): drop and slide in feet first along the floor, hit frame 14
+    H.key(c,1)
+    H.key(c,6,  dip=0.14, lean=-6, fwd=0.04, L=(0.0,0.06,-0.06), RF=(0,-0.04,0.0))
+    H.key(c,10, hips=-6, lean=22, dip=0.52, fwd=0.20, head=-6, LF=(0.0,-0.50,0.02), RF=(0.0,0.0,0.0), L=(0.06,0.20,-0.30), R=(0.04,0.24,-0.42))
+    H.key(c,14, hips=-8, lean=28, dip=0.58, fwd=0.30, head=-8, LF=(0.02,-0.80,0.02), RF=(0.0,-0.10,0.0), L=(0.06,0.24,-0.34), R=(0.04,0.26,-0.48))
+    H.key(c,18, hips=-8, lean=28, dip=0.58, fwd=0.32, head=-8, LF=(0.02,-0.82,0.02), RF=(0.0,-0.12,0.0), L=(0.06,0.24,-0.34), R=(0.04,0.26,-0.48))
+    H.key(c,28, hips=-4, lean=6, dip=0.20, fwd=0.16, LF=(0,-0.30,0.0), RF=(0,-0.08,0), L=(0.02,0.10,-0.10))
+    H.key(c,36)
+
+@move('hk-roundhouse', 39, (13,'RightFoot'))
+def roundhouse(c):   # 63214L Danfo Kick: pivot on the lead foot, rear leg whips round at head height, hit frame 13
+    H.key(c,1)
+    H.key(c,5,  hips=-8, lean=4, dip=0.04, R=(0.0,0.04,0.02), L=(0.0,0.06,0.04))
+    H.key(c,9,  hips=30, spine=10, lean=14, dip=0.0, fwd=0.04, head=-10, RF=(-0.36,-0.30,0.62), L=(0.06,0.14,0.06), R=(0.10,0.10,0.0))
+    H.key(c,13, hips=62, spine=16, lean=22, side=-14, dip=0.0, fwd=0.06, head=-28, RF=(-0.04,-0.92,1.05), L=(0.06,0.20,0.06), R=(0.14,0.22,-0.08))
+    H.key(c,16, hips=72, spine=18, lean=22, side=-14, dip=0.0, fwd=0.06, head=-32, RF=(0.22,-0.80,1.00), L=(0.06,0.20,0.06), R=(0.14,0.22,-0.08))
+    H.key(c,24, hips=40, spine=10, lean=10, dip=0.04, fwd=0.04, head=-16, RF=(0.10,-0.20,0.30), L=(0.04,0.10,0.04))
+    H.key(c,39)
+
+@move('hk-grab', 34, (6,'RightHand'))
+def grab(c):   # throws and the headbutt: both hands shoot out to the shoulders (startup 5-7), then pull back on a whiff
+    H.key(c,1)
+    H.key(c,3,  hips=-4, lean=-4, dip=0.04, L=(0.0,0.02,0.02), R=(0.02,0.0,0.02))
+    H.key(c,6,  hips=8, spine=4, lean=-10, dip=0.06, fwd=0.10, head=4, L=(-0.06,-0.24,0.10), R=(0.20,-0.52,-0.02), LF=(0,-0.10,0))
+    H.key(c,8,  hips=8, spine=4, lean=-11, dip=0.06, fwd=0.11, head=4, L=(-0.06,-0.26,0.10), R=(0.20,-0.54,-0.02), LF=(0,-0.10,0))
+    H.key(c,20, hips=2, lean=-4, dip=0.03, fwd=0.05, L=(0.0,-0.06,0.04), R=(0.06,-0.14,0.0), LF=(0,-0.05,0))
+    H.key(c,34)
+
+@move('hk-heave', 46, (16,'RightHand'))
+def heave(c):   # grabbing: hold him for the tech window, then turn and heave him over the hip
+    H.key(c,1,  hips=8, spine=4, lean=-11, dip=0.06, fwd=0.11, head=4, L=(-0.06,-0.26,0.10), R=(0.20,-0.54,-0.02), LF=(0,-0.10,0))
+    H.key(c,8,  hips=4, spine=2, lean=-6, dip=0.10, fwd=0.08, head=2, L=(-0.04,-0.20,0.06), R=(0.20,-0.44,-0.04), LF=(0,-0.10,0))
+    H.key(c,12, hips=-20, spine=-10, lean=-2, dip=0.16, fwd=0.06, head=-10, L=(0.10,-0.10,-0.06), R=(0.10,-0.30,-0.10), LF=(0,-0.10,0))
+    H.key(c,16, hips=40, spine=20, lean=-14, dip=0.08, fwd=0.10, head=24, L=(-0.10,-0.20,0.30), R=(0.36,-0.20,0.34), LF=(0,-0.10,0))
+    H.key(c,20, hips=55, spine=24, lean=-18, dip=0.06, fwd=0.10, head=30, L=(-0.14,-0.04,0.22), R=(0.40,0.04,0.20), LF=(0,-0.10,0))
+    H.key(c,32, hips=20, spine=8, lean=-6, dip=0.04, fwd=0.06, head=10, L=(0.0,0.02,0.04), R=(0.10,-0.06,0.0), LF=(0,-0.06,0))
+    H.key(c,46)
+
+@move('hk-held', 20, (4,'Head'))
+def held(c):   # grabbed: jolted, hands up to the grabber's arms, up on the toes
+    H.key(c,1)
+    H.key(c,4,  hips=6, spine=4, lean=10, dip=-0.03, head=-8, L=(-0.04,-0.12,0.14), R=(0.14,-0.30,0.04), RF=(0,0,0.04))
+    H.key(c,10, hips=8, spine=4, lean=12, dip=-0.05, head=-10, L=(-0.06,-0.14,0.16), R=(0.16,-0.32,0.06), RF=(0,0,0.06), LF=(0,0,0.03))
+    H.key(c,20, hips=8, spine=4, lean=12, dip=-0.05, head=-10, L=(-0.06,-0.14,0.16), R=(0.16,-0.32,0.06), RF=(0,0,0.06), LF=(0,0,0.03))
+
+@move('hk-headbutt', 46, (8,'Head'))
+def headbutt(c):   # grabbing after the Conductor's Headbutt: yank him in, rear the head back, smash, shove
+    H.key(c,1,  hips=8, spine=4, lean=-11, dip=0.06, fwd=0.11, head=4, L=(-0.06,-0.26,0.10), R=(0.20,-0.54,-0.02), LF=(0,-0.10,0))
+    H.key(c,5,  hips=4, spine=2, lean=8, dip=0.04, fwd=0.06, head=0, L=(-0.04,-0.16,0.10), R=(0.18,-0.40,0.0), LF=(0,-0.10,0), extra={'Neck':(0,10,0),'Head':(0,12,0)})
+    H.key(c,8,  hips=6, spine=4, lean=-22, dip=0.08, fwd=0.16, head=0, L=(-0.04,-0.20,0.06), R=(0.18,-0.44,-0.04), LF=(0,-0.14,0), extra={'Neck':(0,-12,0),'Head':(0,-14,0)})
+    H.key(c,11, hips=6, spine=4, lean=-24, dip=0.08, fwd=0.17, head=0, L=(-0.04,-0.20,0.06), R=(0.18,-0.44,-0.04), LF=(0,-0.14,0), extra={'Neck':(0,-14,0),'Head':(0,-16,0)})
+    H.key(c,18, hips=10, spine=6, lean=-8, dip=0.06, fwd=0.14, head=6, L=(-0.10,-0.44,0.04), R=(0.18,-0.60,-0.02), LF=(0,-0.14,0), extra={'Neck':(0,0,0),'Head':(0,0,0)})
+    H.key(c,32, hips=2, lean=-2, dip=0.03, fwd=0.06, L=(0.0,-0.06,0.03), R=(0.06,-0.12,0.0), LF=(0,-0.06,0), extra={'Neck':(0,0,0),'Head':(0,0,0)})
+    H.key(c,46, extra={'Neck':(0,0,0),'Head':(0,0,0)})
+
+@move('hk-flurry', 56, (8,'LeftHand'))
+def flurry(c):   # Fare Collection: eight alternating straights stepping forward, then a closing hook
+    H.key(c,1)
+    f=5; side=0
+    for i in range(8):
+        tw = -10 if side==0 else 16
+        Lp = (-0.05,-0.32,0.16) if side==0 else (-0.02,0.22,0.12)
+        Rp = (0.03,0.03,0.03) if side==0 else (0.15,-0.56,0.0)
+        H.key(c,f, hips=tw, spine=tw*0.6, lean=-6, dip=0.05, fwd=0.04+0.02*i, head=tw, L=Lp, R=Rp, LF=(0,-0.04-0.015*i,0), RF=(0,-0.02-0.012*i,0))
+        H.key(c,f+1, hips=tw*0.5, spine=tw*0.3, lean=-5, dip=0.05, fwd=0.04+0.02*i, head=tw*0.5, L=(0.0,-0.02,0.06), R=(0.03,-0.08,0.03), LF=(0,-0.04-0.015*i,0), RF=(0,-0.02-0.012*i,0))
+        f+=3; side=1-side
+    H.key(c,30, hips=-14, spine=-8, lean=-2, dip=0.06, fwd=0.20, head=-8, R=(-0.32,-0.06,0.08), L=(0.02,0.18,0.10), LF=(0,-0.16,0), RF=(0,-0.12,0))
+    H.key(c,33, hips=26, spine=14, lean=-10, dip=0.06, fwd=0.24, head=26, R=(0.10,-0.60,0.02), L=(0.02,0.26,0.12), LF=(0,-0.18,0), RF=(0,-0.12,0))
+    H.key(c,37, hips=28, spine=15, lean=-11, dip=0.06, fwd=0.25, head=27, R=(0.14,-0.52,-0.02), L=(0.02,0.26,0.12), LF=(0,-0.18,0), RF=(0,-0.12,0))
+    H.key(c,46, hips=10, spine=5, lean=-4, dip=0.04, fwd=0.14, R=(0.04,-0.18,0.0), LF=(0,-0.10,0), RF=(0,-0.08,0))
+    H.key(c,56)
+
+@move('hk-air-knee', 18, (4,'LeftLeg'))
+def air_knee(c):   # j.L: drive the front knee forward and up
+    air(c,1)
+    air(c,4, hips=40, spine=-14, lean=-14, LF=(0.04,0.16,0.36), RF=(0.0,0.08,0.28), head=18)
+    air(c,11, hips=40, spine=-14, lean=-14, LF=(0.04,0.16,0.34), RF=(0.0,0.08,0.28), head=18)
+    air(c,18)
+
+@move('hk-air-kick', 18, (5,'LeftFoot'))
+def air_kick(c):   # j.M: side kick straight out, leaning away from it
+    air(c,1)
+    air(c,3, lean=8, LF=(0.0,-0.10,0.55))
+    air(c,5, hips=-10, lean=22, head=-10, LF=(0.04,-0.72,0.62), RF=(0.0,0.10,0.40), L=(0.04,0.12,0.0))
+    air(c,11, hips=-10, lean=22, head=-10, LF=(0.04,-0.74,0.60), RF=(0.0,0.10,0.40), L=(0.04,0.12,0.0))
+    air(c,18)
+
+@move('hk-air-elbow', 20, (8,'RightForeArm'))
+def air_elbow(c):   # j.H: tip forward and drive the rear elbow down at the head
+    air(c,1)
+    air(c,4, hips=-6, lean=6, R=(0.06,0.06,0.24), L=(0.0,0.04,0.10))
+    air(c,8, hips=16, spine=8, lean=-30, head=14, R=(0.14,-0.20,-0.06), L=(0.04,0.10,-0.02), LF=(0.0,0.0,0.48), RF=(0.0,0.12,0.50))
+    air(c,13, hips=16, spine=8, lean=-30, head=14, R=(0.14,-0.20,-0.08), L=(0.04,0.10,-0.04), LF=(0.0,0.0,0.48), RF=(0.0,0.12,0.50))
+    air(c,20)
+
 def run(names=None, export=True):
     out=[]
     for n,(fn,end,(cf,limb)) in MOVES.items():
