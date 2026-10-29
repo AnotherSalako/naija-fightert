@@ -29,7 +29,7 @@ const SHAKE: Record<string, [number, number]> = {
 const SMOOTH = new Set(['idle', 'walk', 'crouch', 'prejump', 'land', 'jump', 'dash', 'backdash', 'getup', 'victory', 'taunt']);
 const KO_SLOW = { delay: 0.33, length: 1.5, scale: 0.3 };
 /** metres between two models' torso centres at the closest: chest to chest, side-on */
-const TORSO_GAP = 0.38;
+const TORSO_GAP = 0.72;
 /** close-up framing: the fighter's share of the screen height, and the intro frames left for easing back */
 const CLOSE_SHARE = 0.7;
 const CLOSE_EASE_OUT = 25;

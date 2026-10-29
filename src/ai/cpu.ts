@@ -181,7 +181,7 @@ export class Cpu {
     // wakeup: sometimes a reversal timed for the first free frame, otherwise block
     if (me.action === 'knockdown' || me.action === 'getup') {
       const dp = this.move(s, '623M');
-      if (me.action === 'getup' && me.frame === GETUP_FRAMES - 3 && this.wakeJudged !== s.frame && dp && dist < 140) {
+      if (me.action === 'getup' && me.frame === GETUP_FRAMES - 3 && this.wakeJudged !== s.frame && dp && dist < 176) {
         this.wakeJudged = s.frame;
         if (this.roll(Math.floor(this.cfg.punish / 2))) { this.plan = typeMove(dp); return out(5); }
       }
@@ -214,7 +214,7 @@ export class Cpu {
         this.judged = key;
         const reach = Math.max(0, ...sm.hitboxes.map((b) => b.x + b.w)) + sm.travel + 40;
         const recovering = seen.frame > lastActiveFrame(sm);
-        if (recovering && dist < 150 && this.roll(this.cfg.punish)) { this.combo(s, 'punish'); return out(5); }
+        if (recovering && dist < 186 && this.roll(this.cfg.punish)) { this.combo(s, 'punish'); return out(5); }
         if (!recovering && dist < reach && this.roll(this.cfg.block)) {
           const right = sm.level === 'low' ? 1 : sm.level === 'overhead' ? 4 : this.roll(50) ? 1 : 4;
           const wrong = (sm.level === 'low' || sm.level === 'overhead') && this.roll(this.cfg.wrongHeight);
@@ -225,7 +225,7 @@ export class Cpu {
     }
 
     // a jump coming in: anti-air (or not)
-    if (seen.action === 'jump' && seen.vy < 0 && dist < 170) {
+    if (seen.action === 'jump' && seen.vy < 0 && dist < 206) {
       const key = `jump@${this.past[0].frame - seen.frame}`;
       if (key !== this.jumpJudged) {
         this.jumpJudged = key;
@@ -235,14 +235,14 @@ export class Cpu {
 
     // neutral: choose what to do next by distance
     const dash: Step[] = [{ dir: 6, buttons: 0 }, { dir: 5, buttons: 0 }, { dir: 6, buttons: 0 }, { dir: 6, buttons: 0 }];
-    if (dist > 260) {
+    if (dist > 296) {
       const c = this.pick<string>([['walk', 55], ['dash', 18], ['rush', this.scaled(8, this.cfg.rush)], ['jump', 5], ['wait', 14 + this.cfg.pause]]);
       if (c === 'walk') this.hold(6, 12);
       else if (c === 'dash') this.plan = dash;
       else if (c === 'rush') { if (!this.queue(s, ['236H'], false)) this.hold(6, 8); }
       else if (c === 'jump') this.hold(9, 3);
       else this.hold(5, 10);
-    } else if (dist > 140) {
+    } else if (dist > 176) {
       const c = this.pick<string>([['walk', 34], ['poke', 10], ['rush', this.scaled(12, this.cfg.rush)], ['back', 10],
         ['wait', 14 + this.cfg.pause], ['jump', 6], ['dash', 14], ['whiff', this.cfg.mistake]]);
       if (c === 'walk') this.hold(6, 10);
