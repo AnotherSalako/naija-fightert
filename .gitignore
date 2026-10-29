@@ -1,0 +1,4 @@
+node_modules
+dist
+# secrets (the Vercel token) never go to git
+.env*

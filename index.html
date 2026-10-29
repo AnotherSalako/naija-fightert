@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#15102a" />
+  <title>Naija Fighters</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #15102a; overflow: hidden; font-family: Georgia, 'Times New Roman', serif; color: #f3e9dc; }
+    #app { position: fixed; inset: 0; }
+    #app canvas { display: block; width: 100%; height: 100%; }
+    .hud { position: absolute; inset: 0; pointer-events: none; }
+    .hud-top { display: flex; align-items: flex-start; justify-content: center; gap: 2.2vw; padding: 2.2vh 2.4vw 0; }
+    .hud-side { flex: 1; max-width: 40vw; }
+    .hud-side-1 { text-align: right; }
+    .hud-name { font-family: monospace; font-size: clamp(11px, 1.6vw, 18px); letter-spacing: 0.08em; margin-bottom: 4px; text-shadow: 0 1px 3px #000; }
+    .hud-bar { position: relative; height: clamp(12px, 2.4vh, 22px); background: #2a1e18; border: 2px solid #c9a27e; border-radius: 3px; overflow: hidden; }
+    .hud-side-1 .hud-bar { transform: scaleX(-1); }
+    .hud-bar-trail, .hud-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; }
+    .hud-bar-trail { background: #b8402c; }
+    .hud-bar-fill { background: linear-gradient(#f5d36a, #d9a02e); }
+    .hud-pips { margin-top: 5px; display: flex; gap: 6px; }
+    .hud-side-1 .hud-pips { justify-content: flex-end; }
+    .hud-pip { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #c9a27e; }
+    .hud-pip.won { background: #f5d36a; }
+    .hud-timer { font-size: clamp(26px, 5vh, 48px); color: #c9a27e; min-width: 2.2em; text-align: center; text-shadow: 0 2px 4px #000; }
+    .hud-announce { position: absolute; top: 32%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 2.5vh; padding: 0 4vw; }
+    .hud-banner { text-align: center; line-height: 1.05; font-size: clamp(40px, 11vh, 110px); color: #f5d36a; text-shadow: 0 0 6px #000, 0 4px 12px #000; transition: opacity 0.15s; }
+    .hud-sub { text-align: center; font-family: monospace; font-size: clamp(14px, 2.5vh, 22px); text-shadow: 0 1px 3px #000; transition: opacity 0.15s; }
+    .hud-combo { position: absolute; top: 24%; font-size: clamp(22px, 5vh, 44px); color: #f5d36a; text-shadow: 0 2px 6px #000; }
+    .hud-combo-0 { left: 4vw; }
+    .hud-combo-1 { right: 4vw; text-align: right; }
+    .hud-combo { white-space: pre-line; line-height: 1.05; }
+    @media (pointer: coarse) { #hint { display: none; } .hud-bottom { bottom: 2.4vh !important; } }
+    .hud-bottom { position: absolute; left: 0; right: 0; bottom: calc(2.4vh + 30px); display: flex; justify-content: space-between; padding: 0 2.4vw; }
+    .hud-meter { display: flex; align-items: center; gap: 8px; width: min(34vw, 340px); }
+    .hud-meter-1 { flex-direction: row-reverse; }
+    .hud-meter-num { font-size: clamp(18px, 3.4vh, 30px); color: #7fd4ff; text-shadow: 0 2px 4px #000; min-width: 1em; text-align: center; }
+    .hud-meter-segs { flex: 1; display: flex; gap: 3px; }
+    .hud-meter-1 .hud-meter-segs { transform: scaleX(-1); }
+    .hud-meter-seg { flex: 1; height: clamp(8px, 1.6vh, 14px); background: #14202a; border: 2px solid #4c7a96; border-radius: 2px; overflow: hidden; }
+    .hud-meter-fill { height: 100%; width: 0; background: linear-gradient(#5cc8ff, #2a7fd0); }
+    .hud-meter-fill.full { background: linear-gradient(#bff0ff, #49b6ff); box-shadow: 0 0 8px #7fd4ff; }
+    .hud-wahala { position: relative; display: inline-block; margin-top: 4px; padding: 1px 8px; font-size: clamp(11px, 1.8vh, 16px); letter-spacing: 0.1em; color: #ffb347; border: 2px solid #ffb347; border-radius: 3px; opacity: 0; overflow: hidden; }
+    .hud-wahala.ready { opacity: 1; animation: nf-blink 0.5s steps(2) infinite; }
+    .hud-wahala.active { opacity: 1; animation: none; color: #1a0d05; background: #ffb347; }
+    .hud-wahala-fill { position: absolute; left: 0; bottom: 0; height: 3px; background: #fff; }
+    .hud-side.low .hud-bar { animation: nf-flash 0.4s steps(2) infinite; }
+    @keyframes nf-blink { 50% { opacity: 0.25; } }
+    @keyframes nf-flash { 50% { border-color: #ff5a2a; box-shadow: 0 0 10px #ff5a2a; } }
+    .hud-callout { position: absolute; top: 31%; font-size: clamp(18px, 4vh, 36px); letter-spacing: 0.06em; opacity: 0; text-shadow: 0 2px 6px #000; }
+    .hud-callout-0 { left: 4vw; }
+    .hud-callout-1 { right: 4vw; }
+    .hud-callout.counter { color: #ff5a2a; }
+    .hud-callout.punish { color: #ffd34a; }
+    .hud-callout.tech { color: #bfe4ff; }
+    .hud-callout.wahala { color: #ffb347; }
+    .hud-callout.show { animation: nf-pop 0.9s ease-out forwards; }
+    @keyframes nf-pop { 0% { opacity: 0; transform: scale(1.6); } 12% { opacity: 1; transform: scale(1); } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-12px); } }
+    .hud-super { position: absolute; top: 62%; font-size: clamp(22px, 5.5vh, 52px); color: #fff; letter-spacing: 0.08em; opacity: 0; padding: 4px 28px; background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,0.75) 20%, rgba(0,0,0,0.75) 80%, rgba(0,0,0,0)); text-shadow: 0 0 10px #ffb347; }
+    .hud-super-0 { left: 0; }
+    .hud-super-1 { right: 0; }
+    .hud-super.show { animation: nf-super 0.75s ease-out forwards; }
+    @keyframes nf-super { 0% { opacity: 0; transform: translateX(-40%); } 25% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+    .hud-super-1.show { animation-name: nf-super-r; }
+    @keyframes nf-super-r { 0% { opacity: 0; transform: translateX(40%); } 25% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+    #hint { position: fixed; left: 0; right: 0; bottom: 8px; text-align: center; font-family: monospace; font-size: 12px; color: #c9b8a6; text-shadow: 0 1px 2px #000; pointer-events: none; }
+    #debug { position: fixed; left: 8px; bottom: 28px; font-family: monospace; font-size: 12px; background: #0009; padding: 4px 8px; border-radius: 4px; pointer-events: none; }
+    #rotate { display: none; position: fixed; inset: 0; z-index: 10; background: #15102a; align-items: center; justify-content: center; flex-direction: column; gap: 16px; text-align: center; color: #c9a27e; }
+    #rotate .icon { font-size: 64px; animation: turn 2.2s ease-in-out infinite; }
+    @keyframes turn { 0%, 25% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+    @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+  </style>
+</head>
+<body>
+  <div id="rotate"><div class="icon">&#128241;</div><p>Turn your phone sideways to play</p></div>
+  <div id="app"></div>
+  <div id="hint"></div>
+  <div id="debug"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{
+  "id": "egbon-razak",
+  "file": "models/egbon-razak.glb",
+  "height": 1.82,
+  "triangles": 50000,
+  "bones": 43,
+  "cloth": [
+    "cloth_trouser_L",
+    "cloth_trouser_R"
+  ],
+  "clips": {
+    "cross": {
+      "duration": 2.0,
+      "contact": 1.167,
+      "low": 0.733
+    },
+    "crouch-idle": {
+      "duration": 2.5,
+      "contact": 1.1,
+      "low": 1.133
+    },
+    "fighting-idle": {
+      "duration": 3.3,
+      "contact": 1.433,
+      "low": 1.033
+    },
+    "hit-reaction": {
+      "duration": 0.433,
+      "contact": 0.233,
+      "low": 0.167
+    },
+    "hook": {
+      "duration": 2.167,
+      "contact": 1.0,
+      "low": 0.7
+    },
+    "jab": {
+      "duration": 1.033,
+      "contact": 0.567,
+      "low": 0.433
+    },
+    "jump": {
+      "duration": 2.167,
+      "contact": 1.1,
+      "low": 0.533
+    },
+    "kick-medium": {
+      "duration": 1.6,
+      "contact": 0.5,
+      "low": 1.333
+    },
+    "kick-roundhouse": {
+      "duration": 1.667,
+      "contact": 0.667,
+      "low": 1.133
+    },
+    "knockdown": {
+      "duration": 4.933,
+      "contact": 4.8,
+      "low": 2.233
+    },
+    "victory": {
+      "duration": 4.5,
+      "contact": 2.167,
+      "low": 0.4
+    },
+    "walk-back": {
+      "duration": 0.867,
+      "contact": 0.567,
+      "low": 0.467
+    },
+    "walk-forward": {
+      "duration": 1.367,
+      "contact": 0.167,
+      "low": 0.367
+    }
+  },
+  "facing": "+Z",
+  "source": "tools/blender/prepare_character.py from egbon-rigged-tpose.fbx",
+  "bytes": 1750412
+}

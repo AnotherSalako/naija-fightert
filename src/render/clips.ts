@@ -1,0 +1,73 @@
+// Which authored clip (Mixamo moves, prepared by tools/blender/prepare_character.py) plays for a fighter
+// state, and where in it. What plays is data (src/render/animsets/*.json): the first entry whose clip the
+// model has. The time comes from the sim's frame counter, never a clock, so a clip stays on its frame
+// data: an attack's moment of contact lands on the move's first active frame, and hit-stop freezes it.
+// States and moves with no usable entry return null and the procedural poses (poses.ts) take over.
+
+import type { FighterState, MoveData } from '../sim/types';
+import type { AnimSet, ClipEntry } from './animsets';
+
+/** from the model's manifest: the clip's length, its moment of contact and its lowest moment, in seconds */
+export interface ClipInfo {
+  duration: number;
+  contact: number;
+  low?: number;
+}
+
+export interface ClipPlay {
+  name: string;
+  time: number;
+  /** tip the body back (degrees) */
+  lean?: number;
+  /** raise the arms (degrees) */
+  aim?: number;
+  /** cut straight in, without blending from the previous pose */
+  snap?: boolean;
+}
+
+const FPS = 60;
+/** an attack clip plays this long before its contact over the startup frames, and this long after over the rest */
+const WINDUP = 0.35;
+const FOLLOW = 0.6;
+
+/** the animation-set state a fighter is in (directions and stances split some sim actions) */
+function stateKey(f: FighterState, vx: number): string {
+  switch (f.action) {
+    case 'walk': return vx >= 0 ? 'walkForward' : 'walkBack';
+    case 'hitstun': return f.crouching ? 'crouchHitstun' : 'hitstun';
+    case 'blockstun': return f.crouching ? 'crouchBlockstun' : 'blockstun';
+    default: return f.action;
+  }
+}
+
+/** The clip for this fighter now, or null. `vx` is the forward speed (positive toward the opponent). */
+export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: Record<string, ClipInfo>, set: AnimSet | undefined): ClipPlay | null {
+  if (!set) return null;
+  const usable = (entries: ClipEntry[] | undefined): ClipEntry | undefined => entries?.find((e) => clips[e.clip]);
+  const s = (f.frame - 1) / FPS;
+
+  if (f.action === 'attack') {
+    const e = m ? usable(set.moves[m.id]) : undefined;
+    if (!m || !e) return null;
+    const c = clips[e.clip];
+    const start = Math.max(0, c.contact - WINDUP);
+    const end = Math.min(c.duration, c.contact + FOLLOW);
+    let time: number;
+    if (f.frame < m.startup) time = start + (c.contact - start) * (f.frame / Math.max(1, m.startup));
+    else time = c.contact + (end - c.contact) * Math.min(1, (f.frame - m.startup) / Math.max(1, m.active + m.recovery + m.animHoldFrames));
+    return { name: e.clip, time, lean: e.lean, aim: e.aim };
+  }
+
+  const e = usable(set.states[stateKey(f, vx)]);
+  if (!e) return null;
+  const c = clips[e.clip];
+  const at = (v: 'low' | 'end' | number): number => (v === 'low' ? c.low ?? 0 : v === 'end' ? c.duration : v);
+  let time: number;
+  if (e.at !== undefined) time = at(e.at);
+  else if (e.loop) time = c.duration > 0 ? (s * (e.speed ?? 1)) % c.duration : 0;
+  else {
+    const from = e.lead !== undefined ? Math.max(0, (c.low ?? 0) - e.lead) : e.from ?? 0;
+    time = Math.max(0, Math.min(at(e.until ?? 'end'), from + s * (e.speed ?? 1)));
+  }
+  return { name: e.clip, time, lean: e.lean, aim: e.aim, snap: e.snap };
+}

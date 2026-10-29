@@ -1,0 +1,8 @@
+node_modules
+dist
+reference
+tests
+assets-src
+tools
+*.blend
+*.blend1

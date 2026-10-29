@@ -1,0 +1,4 @@
+[
+  {"name": "cloth_trouser_L", "parent": "LeftLeg", "radius": 0.06},
+  {"name": "cloth_trouser_R", "parent": "RightLeg", "radius": 0.06}
+]

@@ -1,0 +1,10 @@
+{
+  "name": "Naija Fighters",
+  "short_name": "Naija Fighters",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#15102a",
+  "theme_color": "#15102a",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

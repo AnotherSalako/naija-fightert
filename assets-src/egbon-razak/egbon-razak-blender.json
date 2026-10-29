@@ -1,0 +1,14 @@
+{
+  "id": "egbon-razak",
+  "file": "models/egbon-razak.glb",
+  "height": 1.82,
+  "triangles": 7760,
+  "bones": 24,
+  "cloth": [
+    "cloth_trouser_L",
+    "cloth_trouser_R"
+  ],
+  "facing": "+Z",
+  "source": "tools/blender/build_egbon.py (modelled from the sheet)",
+  "bytes": 531776
+}

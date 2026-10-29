@@ -1,0 +1,42 @@
+{
+  "id": "chief-priest",
+  "name": "Chief Priest",
+  "archetype": "zoner",
+  "health": 900,
+  "walkForward": 3.4,
+  "walkBack": 3.2,
+  "dash": { "frames": 18, "distance": 100 },
+  "backdash": { "frames": 22, "distance": 120, "invulnFrom": 1, "invulnTo": 6 },
+  "jump": { "frames": 48, "height": 120, "distance": 130 },
+  "pushWidth": 56,
+  "height": 178,
+  "hurtboxes": {
+    "stand": { "x": -26, "y": 0, "w": 52, "h": 176 },
+    "crouch": { "x": -28, "y": 0, "w": 56, "h": 106 },
+    "air": { "x": -24, "y": 20, "w": 48, "h": 130 }
+  },
+  "palette": { "skin": "#6e4429", "primary": "#f3efe6", "secondary": "#1d2a5a", "accent": "#c41f25", "extra": "#d66a2c" },
+  "palette2": { "skin": "#6e4429", "primary": "#1b1b1b", "secondary": "#c9a227", "accent": "#2a2a2a", "extra": "#c9a227" },
+  "moves": [
+    { "id": "5L", "name": "Staff Tap", "input": "5L", "startup": 5, "active": 2, "recovery": 9, "damage": 25, "onBlock": 0, "strength": "light", "level": "mid", "anim": "staff_poke",
+      "hitboxes": [{ "x": 24, "y": 110, "w": 92, "h": 22 }] },
+    { "id": "2L", "name": "Low Staff Poke", "input": "2L", "startup": 5, "active": 2, "recovery": 9, "damage": 22, "onBlock": -1, "strength": "light", "level": "low", "anim": "staff_low",
+      "hitboxes": [{ "x": 24, "y": 14, "w": 92, "h": 22 }] },
+    { "id": "5M", "name": "Staff Swing", "input": "5M", "startup": 9, "active": 3, "recovery": 15, "damage": 50, "onBlock": -3, "strength": "medium", "level": "mid", "anim": "staff_swing",
+      "hitboxes": [{ "x": 26, "y": 96, "w": 116, "h": 36 }] },
+    { "id": "2M", "name": "Low Staff Sweep", "input": "2M", "startup": 10, "active": 3, "recovery": 16, "damage": 48, "onBlock": -5, "strength": "medium", "level": "low", "anim": "staff_low",
+      "hitboxes": [{ "x": 24, "y": 0, "w": 122, "h": 26 }] },
+    { "id": "5H", "name": "Staff Slam", "input": "5H", "startup": 15, "active": 4, "recovery": 24, "damage": 85, "onBlock": -8, "strength": "heavy", "level": "mid", "anim": "slam",
+      "hitboxes": [{ "x": 40, "y": 0, "w": 112, "h": 120 }] },
+    { "id": "2H", "name": "Rising Staff", "input": "2H", "startup": 11, "active": 4, "recovery": 26, "damage": 75, "onBlock": -12, "strength": "heavy", "level": "mid", "launch": true, "anim": "uppercut",
+      "hitboxes": [{ "x": 14, "y": 96, "w": 70, "h": 120 }] },
+    { "id": "j.L", "name": "Poke", "input": "j.L", "air": true, "startup": 5, "active": 8, "recovery": 3, "damage": 25, "hitstun": 14, "blockstun": 10, "strength": "light", "level": "overhead", "anim": "air_kick",
+      "hitboxes": [{ "x": 12, "y": 30, "w": 88, "h": 26 }] },
+    { "id": "j.M", "name": "Thrust", "input": "j.M", "air": true, "startup": 6, "active": 7, "recovery": 3, "damage": 48, "hitstun": 18, "blockstun": 13, "strength": "medium", "level": "overhead", "anim": "air_kick",
+      "hitboxes": [{ "x": 12, "y": 14, "w": 100, "h": 30 }] },
+    { "id": "j.H", "name": "Diving Staff", "input": "j.H", "air": true, "startup": 9, "active": 6, "recovery": 3, "damage": 80, "hitstun": 22, "blockstun": 16, "strength": "heavy", "level": "overhead", "anim": "air_punch",
+      "hitboxes": [{ "x": 6, "y": -14, "w": 96, "h": 50 }] },
+    { "id": "throw", "name": "Shrine Push", "input": "LM", "type": "throw", "startup": 5, "active": 2, "recovery": 26, "damage": 120, "strength": "heavy", "level": "unblockable", "knockdown": "hard", "grab": true, "grabRange": 22, "techable": true, "anim": "throw" },
+    { "id": "back-throw", "name": "Spirit Swap", "input": "4LM", "type": "throw", "startup": 5, "active": 2, "recovery": 26, "damage": 120, "strength": "heavy", "level": "unblockable", "knockdown": "hard", "grab": true, "grabRange": 22, "techable": true, "backThrow": true, "anim": "throw" }
+  ]
+}
