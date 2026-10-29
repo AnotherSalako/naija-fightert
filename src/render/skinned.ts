@@ -586,6 +586,11 @@ export function skinnedBody(template: THREE.Group, id: string, alt: boolean): Bo
         // bones the clip does not key keep their rest pose
         for (const r of restAll) { r.b.quaternion.copy(r.q); r.b.position.copy(r.p); }
         sample(action, clip.time);
+        // a clip that drifts sideways (the throws walk off their origin) is pinned over the fighter's spot
+        if (clip.center && hips) {
+          const up = hipsAt.copy(hips.position).sub(hipsRest).dot(hipsUpLocal);
+          hips.position.copy(hipsRest).addScaledVector(hipsUpLocal, up);
+        }
       } else {
         pivot.position.y = pose.lift;
         pivot.quaternion.setFromAxisAngle(pivotAxis, pose.body);

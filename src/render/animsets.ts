@@ -21,6 +21,8 @@ export interface ClipEntry {
   until?: 'low' | 'end' | number;
   /** tip the whole body back this many degrees (a hit reaction made into an air hit) */
   lean?: number;
+  /** keep the hips over the fighter's spot: the clip's own sideways drift (mocap that walks off its origin) is dropped */
+  center?: boolean;
   /** raise the arms this many degrees (a hook made into an uppercut) */
   aim?: number;
   /** cut straight in, without blending from the previous pose (a body landing flat) */

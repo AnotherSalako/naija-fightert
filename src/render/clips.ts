@@ -25,6 +25,8 @@ export interface ClipPlay {
   snap?: boolean;
   /** blend-in time in seconds when this clip starts; attacks use a short one so a 3-frame jab reaches its pose */
   fadeSeconds?: number;
+  /** drop the clip's sideways hips drift */
+  center?: boolean;
 }
 
 const FPS = 60;
@@ -67,7 +69,7 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     let time: number;
     if (f.frame < m.startup) time = start + (c.contact - start) * (f.frame / Math.max(1, m.startup));
     else time = c.contact + (end - c.contact) * Math.min(1, (f.frame - m.startup) / Math.max(1, m.active + m.recovery + m.animHoldFrames));
-    return { name: e.clip, time, lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE };
+    return { name: e.clip, time, lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE, center: e.center };
   }
 
   const e = usable(set.states[stateKey(f, vx)]);
@@ -81,5 +83,5 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     const from = e.lead !== undefined ? Math.max(0, (c.low ?? 0) - e.lead) : e.from ?? 0;
     time = Math.max(0, Math.min(at(e.until ?? 'end'), from + s * (e.speed ?? 1)));
   }
-  return { name: e.clip, time, lean: e.lean, aim: e.aim, snap: e.snap };
+  return { name: e.clip, time, lean: e.lean, aim: e.aim, snap: e.snap, center: e.center };
 }

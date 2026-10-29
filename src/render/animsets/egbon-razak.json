@@ -17,8 +17,8 @@
     "knockdown": [{ "clip": "fall-flat", "at": "end", "snap": true }, { "clip": "knockdown", "at": "end", "snap": true }],
     "ko": [{ "clip": "fall-flat" }, { "clip": "knockdown", "lead": 1.2 }],
     "getup": [{ "clip": "get-up" }],
-    "grabbing": [{ "clip": "throw", "from": 4.73 }],
-    "grabbed": [{ "clip": "thrown", "from": 1.6 }],
+    "grabbing": [{ "clip": "uppercut", "from": 0.3, "speed": 0.6, "until": 0.9 }],
+    "grabbed": [{ "clip": "hit-reaction", "from": 0.05, "speed": 0.5, "until": 0.25 }],
     "victory": [{ "clip": "victory" }]
   },
   "moves": {
@@ -44,7 +44,7 @@
     "6H": [{ "clip": "shoulder-charge" }],
     "4M": [{ "clip": "kick-medium" }],
     "63214L": [{ "clip": "kick-roundhouse" }],
-    "63214H": [{ "clip": "throw" }],
+    "63214H": [{ "clip": "cross", "aim": 15 }],
     "214A": [{ "clip": "jab", "aim": 32 }],
     "214A-2": [{ "clip": "cross", "aim": 22 }],
     "22H": [{ "clip": "sweep" }],
@@ -52,8 +52,8 @@
     "j.M": [{ "clip": "kick-medium" }],
     "j.H": [{ "clip": "kick-roundhouse" }],
     "fare-collection": [{ "clip": "hook" }],
-    "last-stop": [{ "clip": "throw" }],
-    "throw": [{ "clip": "throw" }],
-    "back-throw": [{ "clip": "throw" }]
+    "last-stop": [{ "clip": "cross", "aim": 15 }],
+    "throw": [{ "clip": "cross", "aim": 15 }],
+    "back-throw": [{ "clip": "cross", "aim": 15 }]
   }
 }
