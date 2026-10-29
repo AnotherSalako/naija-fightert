@@ -3,7 +3,7 @@
 // juggles, armour, invulnerability, wall bounces, throws and techs.
 
 import {
-  AIR_HIT_POP, CANCEL_WINDOW, COMBO_MAX_FRAMES, COUNTER_DAMAGE_PCT, COUNTER_EXTRA_HITSTUN, HITSTOP, HITSTOP_COUNTER_BONUS,
+  AIR_HIT_GRAVITY, AIR_HIT_POP, CANCEL_WINDOW, COMBO_MAX_FRAMES, COUNTER_DAMAGE_PCT, COUNTER_EXTRA_HITSTUN, HITSTOP, HITSTOP_COUNTER_BONUS,
   HITSTOP_KO, HITSTOP_SUPER_LAST, JUGGLE_LIMIT, LAUNCH_DRIFT, LAUNCH_SPEED, LIGHT_CHAIN_MAX, MAX_SEPARATION, METER_GAIN, METER_MAX, PUSH_HEIGHT, PUSHBACK,
   PUSHBACK_FRAMES, REKKA_WINDOW, SUB, THROW, WAHALA, px, scaling,
 } from './constants';
@@ -100,6 +100,16 @@ export function hitDamage(m: MoveData, index: number): number {
   if (m.hits <= 1) return m.damage;
   const each = Math.floor(m.damage / m.hits);
   return index === m.hits - 1 ? m.damage - each * (m.hits - 1) : each;
+}
+
+/** a little pop per hit that gravity takes back before the next hit of a multi-hit move */
+const MULTI_HIT_POP = px(2.5);
+const LAUNCH_APEX = Math.floor((LAUNCH_SPEED * LAUNCH_SPEED) / (2 * AIR_HIT_GRAVITY));
+/** launch speed that peaks at LAUNCH_APEX above the floor from height y (at least a normal air pop) */
+function launchSpeed(y: number): number {
+  if (y <= 1) return LAUNCH_SPEED;
+  const room = Math.max(0, LAUNCH_APEX - y);
+  return Math.max(AIR_HIT_POP, Math.min(LAUNCH_SPEED, Math.round(Math.sqrt(2 * AIR_HIT_GRAVITY * room))));
 }
 
 function knockOut(d: FighterState, a: FighterState): void {
@@ -223,7 +233,10 @@ function strike(s: SimState, att: Side, m: MoveData, events: SimEvent[]): void {
   } else if (airborne || launch || m.wallbounce || (m.knockdown !== 'none' && last)) {
     const wasDown = d.action === 'airhit' ? d.knockdownKind : 'none';
     setAction(d, 'airhit');
-    d.vy = launch ? LAUNCH_SPEED : AIR_HIT_POP;
+    // a multi-hit move holds an airborne body at its height instead of carrying it up a little more
+    // every hit; a launch never peaks higher than one from the ground would, wherever it starts
+    const pop = m.hits > 1 && !last && airborne ? MULTI_HIT_POP : AIR_HIT_POP;
+    d.vy = launch ? launchSpeed(d.y) : pop;
     d.y = Math.max(d.y, 1);
     // a launched body rises nearly straight up, so a follow-up (623L, 236L, j.H) can still reach it
     d.vx = a.facing * (launch ? LAUNCH_DRIFT : px(2));

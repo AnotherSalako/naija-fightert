@@ -145,6 +145,8 @@ export function advance(f: FighterState, events: SimEvent[], side: Side): void {
   }
 }
 
+const FALLS = new Set<FighterState['action']>(['idle', 'walk', 'crouch', 'dash', 'backdash', 'taunt', 'wahala']);
+
 /** Move the body for one frame: walking, dashes, attack travel, pushback slides and gravity. */
 export function physics(f: FighterState, events: SimEvent[], side: Side): void {
   const c = character(f.charId);
@@ -166,6 +168,12 @@ export function physics(f: FighterState, events: SimEvent[], side: Side): void {
     f.slideFrames--;
   }
 
+  // safety net: a grounded state left above the floor falls instead of hanging there
+  if (f.y > 0 && FALLS.has(f.action)) {
+    setAction(f, 'jump');
+    f.moveId = null;
+    f.airAttacked = true;
+  }
   const inAir = f.action === 'jump' || f.action === 'airhit' || f.action === 'ko' || (f.action === 'attack' && m !== null && m.air);
   if (inAir && (f.y > 0 || f.vy > 0)) {
     f.x += f.vx;

@@ -29,7 +29,13 @@ const SHAKE: Record<string, [number, number]> = {
 const SMOOTH = new Set(['idle', 'walk', 'crouch', 'prejump', 'land', 'jump', 'dash', 'backdash', 'getup', 'victory', 'taunt']);
 const KO_SLOW = { delay: 0.33, length: 1.5, scale: 0.3 };
 /** metres between two models' torso centres at the closest: chest to chest, side-on */
-const TORSO_GAP = 0.72;
+const TORSO_GAP = 0.5;
+/** strike step-in: frames to close in before contact, frames to ease back after, the most it may move, and
+ * how far short of the opponent's centre a fist or foot should stop (about the body's half depth) */
+const LUNGE_LEAD = 4;
+const LUNGE_BACK = 8;
+const LUNGE_MAX = 0.45;
+const LUNGE_BODY = 0.14;
 /** close-up framing: the fighter's share of the screen height, and the intro frames left for easing back */
 const CLOSE_SHARE = 0.7;
 const CLOSE_EASE_OUT = 25;
@@ -313,6 +319,41 @@ export class World {
     b.root.position.x += dir * push;
   }
 
+  private lungeNow = [0, 0];
+  private lungeTmp = new THREE.Vector3();
+  /**
+   * How far (metres, signed along x) a striking body steps in this frame. The hitboxes reach further
+   * than the mocap limbs do, so a hit used to land with the fist short of the body; this closes the
+   * gap over the last frames of startup, holds it through the active frames and eases back after.
+   */
+  private lunge(i: number, f: SimState['fighters'][number], m: ReturnType<typeof moveData>, body: Body, dx: number, clip: ClipPlay | null): number {
+    let want = 0;
+    if (f.action === 'attack' && m && !m.air && !m.grab && m.hitboxes.length > 0 && f.y === 0) {
+      const s = m.startup;
+      const end = s + m.active - 1;
+      const w = f.frame < s - LUNGE_LEAD ? 0 : f.frame < s ? (f.frame - (s - LUNGE_LEAD)) / LUNGE_LEAD
+        : f.frame <= end ? 1 : Math.max(0, 1 - (f.frame - end) / LUNGE_BACK);
+      // the striking limb: feet for kicks, hands otherwise; whichever is furthest forward
+      const legs = !!clip && /kick|sweep/.test(clip.name);
+      const names = legs ? ['LeftFoot', 'RightFoot'] : ['LeftHand', 'RightHand'];
+      if (w > 0) {
+        body.root.updateMatrixWorld(true);
+        let reach = -Infinity;
+        for (const n of names) {
+          const o = body.root.getObjectByName(n);
+          if (o) reach = Math.max(reach, (o.getWorldPosition(this.lungeTmp).x - body.root.position.x) * f.facing);
+        }
+        if (Number.isFinite(reach)) {
+          const dist = dx * f.facing;
+          const room = Math.max(0, dist - TORSO_GAP - 0.02);
+          want = Math.min(room, LUNGE_MAX, Math.max(0, dist - LUNGE_BODY - reach)) * w;
+        }
+      }
+    }
+    this.lungeNow[i] += (want - this.lungeNow[i]) * 0.6;
+    return this.lungeNow[i] * f.facing;
+  }
+
   render(prev: SimState, cur: SimState, alpha: number, t: number, showBoxes: boolean): void {
     const dt = this.lastT === 0 ? 1 / 60 : Math.min(0.1, Math.max(0, t - this.lastT));
     this.lastT = t;
@@ -336,6 +377,9 @@ export class World {
       const clip = body.clips ? clipFor(f, m, vx, body.clips, animSet(f.charId)) : null;
       this.lastClips[i] = clip;
       body.apply(pose, f.facing, dt, vx, f.action === 'attack' || f.action === 'grabbing', clip, f.y === 0);
+
+      // strikes step in so the fist or foot lands on the body the hitbox reaches (render only)
+      body.root.position.x += this.lunge(i, f, m, body, M(cur.fighters[1 - i].x) - M(x), clip);
 
       this.squash[i] += (1 - this.squash[i]) * Math.min(1, dt * 14);
       const sq = this.squash[i];
@@ -363,7 +407,7 @@ export class World {
 
       const shadow = this.shadows[i];
       const up = Math.min(1, M(y) / 1.4);
-      shadow.position.x = M(x);
+      shadow.position.x = body.root.position.x;
       shadow.scale.setScalar(1 - up * 0.55);
       (shadow.material as THREE.MeshBasicMaterial).opacity = 1 - up * 0.6;
       pos.push(M(x));

@@ -206,6 +206,9 @@ export function control(s: SimState, side: Side, events: SimEvent[]): void {
     }
     return;
   }
+  // in the air (an air attack, or knocked up): ground moves, throws and Wahala cannot start, or the
+  // fighter would finish them hanging mid-air
+  if (f.y > 0 || (f.action === 'attack' && moveData(f)?.air)) return;
 
   const m = chooseMove(s, side);
   // S: Wahala, when it is available, from neutral or while blocking (to escape pressure). It beats a

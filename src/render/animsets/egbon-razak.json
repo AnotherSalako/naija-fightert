@@ -44,7 +44,7 @@
     "6H": [{ "clip": "shoulder-charge" }],
     "4M": [{ "clip": "kick-medium" }],
     "63214L": [{ "clip": "kick-roundhouse" }],
-    "421H": [{ "clip": "throw" }],
+    "63214H": [{ "clip": "throw" }],
     "214A": [{ "clip": "jab", "aim": 32 }],
     "214A-2": [{ "clip": "cross", "aim": 22 }],
     "22H": [{ "clip": "sweep" }],
