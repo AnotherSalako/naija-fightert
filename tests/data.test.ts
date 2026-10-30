@@ -96,7 +96,9 @@ describe('character data', () => {
     expect(CHARACTERS['iya-matthew'].health).toBe(1150);
     expect(CHARACTERS['egbon-razak'].health).toBe(1000);
     expect(CHARACTERS['chief-priest'].health).toBe(900);
-    expect(CHARACTERS['egbon-razak'].walkForward).toBe(5);
+    // 30 Oct: Egbon walks at 1.8 m/s (was 3), the speed his boxing step animation actually covers
+    expect(CHARACTERS['egbon-razak'].walkForward).toBe(3);
+    expect(CHARACTERS['egbon-razak'].walkBack).toBe(2.3);
     expect(CHARACTERS['chief-priest'].dash).toEqual({ frames: 18, distance: 100 });
   });
 });

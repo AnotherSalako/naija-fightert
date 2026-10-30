@@ -36,6 +36,11 @@ export interface AnimSet {
   armClearance: { degrees: number; torsoRadius: number };
   states: Record<string, ClipEntry[]>;
   moves: Record<string, ClipEntry[]>;
+  /**
+   * Getting up from the floor: this clip starts `lead` frames before the knockdown ends and carries on
+   * through the get-up, from `from` seconds at `speed`, so the rise is not squeezed into the get-up alone.
+   */
+  rise?: { clip: string; from: number; speed: number; lead: number };
 }
 
 const SETS: Record<string, AnimSet> = {

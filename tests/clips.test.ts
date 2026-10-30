@@ -10,6 +10,11 @@ import type { FighterState, MoveData } from '../src/sim/types';
 const set = animSet('egbon-razak');
 const clips: Record<string, ClipInfo> = {
   'fighting-idle': { duration: 3.3, contact: 0, low: 1 },
+  'walk-step-fwd': { duration: 1.0, contact: 0.5, low: 0.6 },
+  'walk-step-back': { duration: 0.833, contact: 0.5, low: 0.5 },
+  'air-hit': { duration: 2.433, contact: 0.7, low: 1.1 },
+  'ko-punch': { duration: 2.133, contact: 0.8, low: 1.1 },
+  'getup-floor': { duration: 2.7, contact: 1.0, low: 0.27 },
   'hk-jab': { duration: 0.167, contact: 0.05, low: 0.05 },
   'hk-rush': { duration: 0.5, contact: 0.217, low: 0.1 },
   'hk-uppercut': { duration: 0.55, contact: 0.183, low: 0.08 },
@@ -49,26 +54,33 @@ describe('clipFor', () => {
     const late = clipFor(fighter('idle', 1 + 60 * 10), null, 0, clips, set)!;
     expect(late.name).toBe('fighting-idle');
     expect(late.time).toBeLessThan(3.3);
-    expect(clipFor(fighter('walk', 5), null, 1, clips, set)!.name).toBe('walk-forward');
-    expect(clipFor(fighter('walk', 5), null, -1, clips, set)!.name).toBe('walk-back');
+    expect(clipFor(fighter('walk', 5), null, 1, clips, set)!.name).toBe('walk-step-fwd');
+    expect(clipFor(fighter('walk', 5), null, -1, clips, set)!.name).toBe('walk-step-back');
   });
 
-  it('plays an air hit as the hit reaction tipped back, never a standing clip', () => {
-    expect(clipFor(fighter('airhit', 4), null, 0, clips, set)).toMatchObject({ name: 'hit-reaction', lean: 35 });
+  it('plays an air hit as the air-hit clip, never a standing clip', () => {
+    expect(clipFor(fighter('airhit', 4), null, 0, clips, set)).toMatchObject({ name: 'air-hit' });
   });
 
-  it('holds a knockdown lying flat (the clip\'s lowest moment), from its first frame to its last', () => {
-    for (const frame of [1, 20, 45]) expect(clipFor(fighter("knockdown", frame), null, 0, clips, set)).toMatchObject({ name: "knockdown", time: clips.knockdown.duration });
-  });
-
-  it('plays 2H as the hand-keyed uppercut, frame for frame', () => {
-    expect(clipFor(fighter('attack', 8), move('2H', 8), 0, clips, set)).toMatchObject({ name: 'hk-uppercut', time: 7 / 60 });
+  it('lies flat through a knockdown, then starts rising its last frames and carries the rise through the get-up', () => {
+    const down = (frame: number, kind = 'soft'): FighterState => ({ ...fighter('knockdown', frame), knockdownKind: kind, quickRise: false } as FighterState);
+    expect(clipFor(down(1), null, 0, clips, set)).toMatchObject({ name: 'ko-punch', time: clips['ko-punch'].duration });
+    expect(clipFor(down(5), null, 0, clips, set)).toMatchObject({ name: 'ko-punch' });
+    const rise = set!.rise!;
+    const start = clipFor(down(30 - rise.lead), null, 0, clips, set)!;
+    expect(start).toMatchObject({ name: 'getup-floor', time: rise.from });
+    const lastDown = clipFor(down(30), null, 0, clips, set)!.time;
+    const firstUp = clipFor(fighter('getup', 1), null, 0, clips, set)!.time;
+    expect(firstUp).toBeGreaterThan(lastDown);
+    expect(firstUp - lastDown).toBeCloseTo(rise.speed / 60, 5);
+    expect(clipFor(down(45 - rise.lead, 'hard'), null, 0, clips, set)!.name).toBe('getup-floor');
+    expect(clipFor(down(20, 'hard'), null, 0, clips, set)!.name).toBe('ko-punch');
   });
 
   it('falls back to the poses where no listed clip exists yet', () => {
     expect(clipFor(fighter('attack', 3), move('22L'), 0, clips, set)).toBeNull();
     expect(clipFor(fighter('blockstun', 3), null, 0, clips, set)).toBeNull();
-    expect(clipFor(fighter('getup', 3), null, 0, clips, set)).toBeNull();
+    expect(clipFor(fighter('land', 2), null, 0, clips, set)).toBeNull();
     expect(clipFor(fighter('idle', 3), null, 0, clips, undefined)).toBeNull();
   });
 });

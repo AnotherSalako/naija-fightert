@@ -14,10 +14,10 @@
       "contact": 0.733,
       "low": 1.133
     },
-    "block": {
-      "duration": 2.767,
-      "contact": 0.8,
-      "low": 0.8
+    "block-react": {
+      "duration": 1.333,
+      "contact": 0.733,
+      "low": 0.0
     },
     "crouch-idle": {
       "duration": 2.5,
@@ -34,15 +34,15 @@
       "contact": 1.433,
       "low": 1.033
     },
-    "get-up": {
+    "getup-floor": {
       "duration": 2.7,
       "contact": 0.967,
       "low": 0.267
     },
-    "hit-reaction": {
-      "duration": 0.433,
-      "contact": 0.233,
-      "low": 0.167
+    "hit-head": {
+      "duration": 1.233,
+      "contact": 0.433,
+      "low": 0.467
     },
     "hk-air-elbow": {
       "duration": 0.317,
@@ -78,6 +78,16 @@
       "duration": 0.317,
       "contact": 0.133,
       "low": 0.1
+    },
+    "hk-crouch-block": {
+      "duration": 0.4,
+      "contact": 0.1,
+      "low": 0.1
+    },
+    "hk-crouch-hit": {
+      "duration": 0.433,
+      "contact": 0.15,
+      "low": 0.05
     },
     "hk-danfo-door": {
       "duration": 0.667,
@@ -184,38 +194,38 @@
       "contact": 0.183,
       "low": 0.083
     },
-    "jump": {
-      "duration": 2.167,
-      "contact": 1.1,
-      "low": 0.533
+    "jump-unarmed": {
+      "duration": 2.333,
+      "contact": 0.7,
+      "low": 1.7
     },
-    "knockback": {
-      "duration": 3.033,
-      "contact": 0.867,
-      "low": 0.867
+    "ko-punch": {
+      "duration": 2.133,
+      "contact": 0.833,
+      "low": 1.1
     },
-    "knockdown": {
-      "duration": 4.933,
-      "contact": 4.8,
-      "low": 2.233
+    "taunt-boxing": {
+      "duration": 1.633,
+      "contact": 0.733,
+      "low": 1.6
     },
-    "victory": {
+    "victory-boxing": {
       "duration": 4.5,
       "contact": 2.167,
       "low": 0.4
     },
-    "walk-back": {
-      "duration": 0.867,
-      "contact": 0.567,
-      "low": 0.467
+    "walk-step-back": {
+      "duration": 0.833,
+      "contact": 0.467,
+      "low": 0.5
     },
-    "walk-forward": {
-      "duration": 1.367,
-      "contact": 0.167,
-      "low": 0.367
+    "walk-step-fwd": {
+      "duration": 1.0,
+      "contact": 0.533,
+      "low": 0.633
     }
   },
   "facing": "+Z",
   "source": "tools/blender/prepare_character.py from egbon-own-rig.fbx",
-  "bytes": 2311020
+  "bytes": 2301428
 }

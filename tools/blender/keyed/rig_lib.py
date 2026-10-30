@@ -116,3 +116,95 @@ def smooth_region(src, test, iters=12, k=0.5):
         for kk,w in top:
             if w>1e-4: src.vertex_groups[kk].add([vi], w/tot, 'REPLACE')
     return len(region)
+
+
+REF = {}
+def retarget(arm, src, act, name):
+    """Same method as the game build (tools/blender/prepare_character.py retarget_onto)."""
+    import mathutils
+    sc = bpy.context.scene
+    srcb = {b.name.split(':')[-1]: b for b in src.pose.bones}
+    A, S = arm.matrix_world, src.matrix_world
+    offs = {}
+    for pb in arm.pose.bones:
+        s = srcb.get(pb.name)
+        if not s: continue
+        tr = (A @ pb.bone.matrix_local).to_3x3().normalized()
+        sr = (S @ s.bone.matrix_local).to_3x3().normalized()
+        swing = tr.col[1].rotation_difference(sr.col[1]).to_matrix()
+        offs[pb.name] = sr.inverted() @ (swing @ tr)
+    hip_t = (A @ arm.pose.bones['Hips'].bone.matrix_local).translation
+    if 'hips' not in REF: REF['hips'] = (S @ srcb['Hips'].bone.matrix_local).translation.copy()
+    hip_s = REF['hips']; ratio = hip_t.z / hip_s.z
+    old = bpy.data.actions.get(name)
+    if old: bpy.data.actions.remove(old)
+    new = bpy.data.actions.new(name); new.use_fake_user = True
+    arm.animation_data_create(); arm.animation_data.action = new
+    for pb in arm.pose.bones:
+        pb.rotation_mode = 'QUATERNION'
+        for c in pb.constraints: c.mute = True
+    def depth(b):
+        d = 0
+        while b.parent: b, d = b.parent, d + 1
+        return d
+    levels = {}
+    for pb in arm.pose.bones: levels.setdefault(depth(pb.bone), []).append(pb)
+    start, end = (int(round(x)) for x in act.frame_range)
+    Ainv = A.inverted()
+    src.animation_data.action = act
+    for fr in range(start, end + 1):
+        sc.frame_set(fr)
+        for pb in arm.pose.bones: pb.location = (0,0,0); pb.rotation_quaternion = (1,0,0,0)
+        bpy.context.view_layer.update()
+        for lvl in sorted(levels):
+            for pb in levels[lvl]:
+                s = srcb.get(pb.name)
+                if s is None: continue
+                rot = ((S @ s.matrix).to_3x3().normalized() @ offs[pb.name]).to_quaternion()
+                head = hip_t + ((S @ s.matrix).translation - hip_s) * ratio if pb.name == 'Hips' else (A @ pb.matrix).translation
+                pb.matrix = Ainv @ mathutils.Matrix.LocRotScale(head, rot, mathutils.Vector((1,1,1)))
+            bpy.context.view_layer.update()
+        for side in ('Left','Right'):
+            h, t = arm.pose.bones.get(side+'Hand'), arm.pose.bones.get(side+'ForeArmTwist')
+            q = h.rotation_quaternion; tw = mathutils.Quaternion((q.w,0.0,q.y,0.0)).normalized()
+            t.rotation_quaternion = mathutils.Quaternion((1,0,0,0)).slerp(tw, 0.5)
+        f = fr - start + 1
+        for pb in arm.pose.bones: pb.keyframe_insert('rotation_quaternion', frame=f)
+        arm.pose.bones['Hips'].keyframe_insert('location', frame=f)
+    return new
+
+def load_clip(path):
+    before=set(bpy.data.objects)
+    bpy.ops.import_scene.fbx(filepath=path)
+    new=[o for o in bpy.data.objects if o not in before]
+    src=[o for o in new if o.type=='ARMATURE'][0]
+    act=src.animation_data.action
+    return src, act, new
+
+def metrics(arm, act, fps=30):
+    """What matters on screen: hips travel (natural speed), stride and foot lift, feet below the floor,
+    hands passing into the torso, knees crossing, loop seam."""
+    sc=bpy.context.scene; arm.animation_data.action=act
+    s,e=(int(round(x)) for x in act.frame_range)
+    W=lambda n: arm.matrix_world@arm.pose.bones[n].head
+    rows=[]
+    for f in range(s,e+1):
+        sc.frame_set(f)
+        hip=W('Hips'); sp=W('Spine'); ch=W('Spine2'); ne=W('Neck')
+        def axisd(p):
+            best=9
+            for a,b in ((hip,sp),(sp,ch),(ch,ne)):
+                d=b-a; t=max(0,min(1,(p-a).dot(d)/d.length_squared)); best=min(best,(p-(a+d*t)).length)
+            return best
+        lf,rf=W('LeftFoot'),W('RightFoot'); lt,rt=W('LeftToeBase'),W('RightToeBase')
+        lk,rk=W('LeftLeg'),W('RightLeg')
+        rows.append(dict(hip=hip.copy(), lf=lf.copy(), rf=rf.copy(), low=min(lf.z,rf.z,lt.z,rt.z),
+            hand=min(axisd(W('LeftHand')),axisd(W('RightHand'))), knees=(lk-rk).length,
+            pose=[pb.matrix.copy() for pb in arm.pose.bones]))
+    dur=(e-s)/fps
+    travel=(rows[-1]['hip']-rows[0]['hip']); travel.z=0
+    lift=max(max(r['lf'].z for r in rows)-min(r['lf'].z for r in rows), max(r['rf'].z for r in rows)-min(r['rf'].z for r in rows))
+    stride=max(max(r['lf'].y for r in rows)-min(r['lf'].y for r in rows), max(r['rf'].y for r in rows)-min(r['rf'].y for r in rows))
+    seam=sum((a.to_quaternion().rotation_difference(b.to_quaternion()).angle) for a,b in zip(rows[0]['pose'],rows[-1]['pose']))
+    return dict(dur=round(dur,2), travel=round(travel.length,2), speed=round(travel.length/max(dur,1e-3),2), stride=round(stride,2), lift=round(lift,3),
+                floor=round(min(r['low'] for r in rows),3), hand_torso=round(min(r['hand'] for r in rows),3), knees=round(min(r['knees'] for r in rows),3), seam=round(seam,2))

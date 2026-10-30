@@ -38,7 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from rig_generated import own_textures, paint_regions  # noqa: E402
 
 # clips whose hips must not move at all: the sim already lifts the fighter through a jump
-STILL_HIPS = {'jump'}
+STILL_HIPS = {'jump', 'jump-unarmed'}
 OUT_FPS = 60
 
 

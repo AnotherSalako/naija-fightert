@@ -6,6 +6,7 @@
 
 import type { FighterState, MoveData } from '../sim/types';
 import type { AnimSet, ClipEntry } from './animsets';
+import { KNOCKDOWN_FRAMES, QUICK_RISE_FRAMES } from '../sim/constants';
 
 /** from the model's manifest: the clip's length, its moment of contact and its lowest moment, in seconds */
 export interface ClipInfo {
@@ -71,6 +72,14 @@ export function clipFor(f: FighterState, m: MoveData | null, vx: number, clips: 
     if (f.frame < m.startup) time = start + (c.contact - start) * (f.frame / Math.max(1, m.startup));
     else time = c.contact + (end - c.contact) * Math.min(1, (f.frame - m.startup) / Math.max(1, m.active + m.recovery + m.animHoldFrames));
     return { name: e.clip, time, lean: e.lean, aim: e.aim, fadeSeconds: ATTACK_FADE, center: e.center };
+  }
+
+  // getting up begins on the floor, `lead` frames before the knockdown ends, and runs on through the get-up
+  const r = set.rise;
+  if (r && clips[r.clip] && (f.action === 'knockdown' || f.action === 'getup')) {
+    const down = f.quickRise ? QUICK_RISE_FRAMES : KNOCKDOWN_FRAMES[f.knockdownKind === 'hard' ? 'hard' : 'soft'];
+    const into = f.action === 'knockdown' ? f.frame - (down - r.lead) : r.lead + f.frame;
+    if (into >= 0) return { name: r.clip, time: Math.min(clips[r.clip].duration, r.from + (into / FPS) * r.speed), fadeSeconds: 0.2 };
   }
 
   // a state may be specialised by the move that led to it ("grabbing:63214H" for the headbutt's hold)
